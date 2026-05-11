@@ -2,23 +2,19 @@
 //  ContentView.swift
 //  TutorTrack
 //
-//  Created by Wei Zhong on 11/5/26.
+//  根视图 = RootTabView（4-Tab：学员 / 课时 / 出勤 / 周报）。
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        RootTabView()
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: Student.self, inMemory: true)
 }
