@@ -2,7 +2,7 @@
 //  Student.swift
 //  TutorTrack
 //
-//  SwiftData @Model：学员档案。
+//  SwiftData @Model: student profile.
 //
 
 import Foundation
@@ -10,24 +10,24 @@ import SwiftData
 
 @Model
 final class Student {
-    /// 唯一 id（同时作为 AI 周报 deterministic seed）
+    /// Unique id (also used as the deterministic seed for the AI weekly report)
     var id: UUID
-    /// 姓名
+    /// Display name
     var name: String
-    /// 课程类型（rawValue 持久化）
+    /// Course type (rawValue is persisted)
     var courseTypeRaw: String
-    /// 已购买总课时
+    /// Total purchased lessons
     var totalLessons: Int
-    /// 已上完课时
+    /// Lessons already attended
     var attendedLessons: Int
-    /// 家长联系方式
+    /// Parent / guardian contact
     var parentContact: String
-    /// 自由备注（家长偏好 / 学习进度等）
+    /// Free-form notes (parent preferences, learning progress, etc.)
     var notes: String
-    /// 创建时间
+    /// Created at
     var createdAt: Date
 
-    /// 一对多：出勤记录（级联删除）
+    /// One-to-many: attendance records (cascade delete)
     @Relationship(deleteRule: .cascade, inverse: \AttendanceRecord.student)
     var attendances: [AttendanceRecord] = []
 
@@ -51,25 +51,25 @@ final class Student {
         self.createdAt = createdAt
     }
 
-    // MARK: - 派生属性
+    // MARK: - Derived properties
 
-    /// 课程类型（不可持久化，从 raw 解析）
+    /// Course type (non-persisted, derived from raw value)
     var courseType: CourseType {
         CourseType(rawValue: courseTypeRaw) ?? .piano
     }
 
-    /// 剩余课时
+    /// Lessons remaining
     var remainingLessons: Int {
         max(0, totalLessons - attendedLessons)
     }
 
-    /// 进度（0...1），用于进度条
+    /// Progress (0...1), used to drive the progress bar
     var progress: Double {
         guard totalLessons > 0 else { return 0 }
         return min(1.0, Double(attendedLessons) / Double(totalLessons))
     }
 
-    /// 是否需要提醒续费（剩余 ≤ 3 节）
+    /// Whether to prompt a renewal (remaining <= 3 lessons)
     var needsRenewal: Bool {
         remainingLessons <= 3
     }

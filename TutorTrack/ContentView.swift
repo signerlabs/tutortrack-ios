@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  TutorTrack
 //
-//  根视图 = RootTabView（4-Tab：学员 / 课时 / 出勤 / 周报）。
+//  Root view = RootTabView (4 tabs: Students / Lessons / Attendance / Report).
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  AttendanceRecord.swift
 //  TutorTrack
 //
-//  SwiftData @Model：单次出勤记录。一名学员 → 多条记录。
+//  SwiftData @Model: a single attendance record. One student -> many records.
 //
 
 import Foundation
@@ -11,13 +11,13 @@ import SwiftData
 @Model
 final class AttendanceRecord {
     var id: UUID
-    /// 上课/标记的日期（截到日粒度，热力图按日聚合）
+    /// Class / check-in date (truncated to day granularity; heatmap aggregates by day)
     var date: Date
-    /// 出勤状态 rawValue
+    /// Attendance status rawValue
     var statusRaw: String
-    /// 本节课评语（≤ 50 字，AI 周报的核心数据源）
+    /// Note for this session (<= 50 chars, primary data source for the AI weekly report)
     var noteText: String
-    /// 反向关系（Student.attendances 的 inverse）
+    /// Reverse relationship (inverse of Student.attendances)
     var student: Student?
 
     init(

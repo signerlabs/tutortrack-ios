@@ -2,16 +2,16 @@
 //  AttendanceStatus.swift
 //  TutorTrack
 //
-//  出勤状态枚举（出勤 / 缺勤 / 请假），附颜色与 SF Symbol 映射，
-//  用于热力图三色显示 + 签到状态 chip。
+//  Attendance-status enum (present / absent / excused) with color and
+//  SF Symbol mappings; drives the three-color heatmap and the check-in chip.
 //
 
 import SwiftUI
 
 enum AttendanceStatus: String, Codable, CaseIterable {
-    case present  // 出勤
-    case absent   // 缺勤
-    case excused  // 请假
+    case present  // Present
+    case absent   // Absent
+    case excused  // Excused
 
     var displayName: String {
         switch self {
@@ -21,7 +21,7 @@ enum AttendanceStatus: String, Codable, CaseIterable {
         }
     }
 
-    /// 热力图 / chip 颜色
+    /// Heatmap / chip color
     var color: Color {
         switch self {
         case .present: .green

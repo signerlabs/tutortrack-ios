@@ -2,14 +2,15 @@
 //  AttendanceCalendarView.swift
 //  TutorTrack
 //
-//  出勤热力日历：基于 SWActivityHeatmap.FlowLayout 自建三色映射网格，
-//  展示某位学员过去 60 天的出勤状态，并允许点空白日期补打卡。
+//  Attendance heatmap calendar. Built on top of SWActivityHeatmap.FlowLayout
+//  with a custom three-color mapping. Shows a student's past 60 days of
+//  attendance and supports tapping an empty date to backfill a record.
 //
-//  色彩规则：
-//    - present  → courseType.color（出勤=课程色，强化品牌识别）
-//    - absent   → 红 .red.opacity(0.75)
-//    - excused  → 灰 .gray.opacity(0.55)
-//    - 无记录   → courseType.color.opacity(0.12)
+//  Color rules:
+//    - present  -> courseType.color (present == course color, reinforces brand)
+//    - absent   -> red .red.opacity(0.75)
+//    - excused  -> gray .gray.opacity(0.55)
+//    - no entry -> courseType.color.opacity(0.12)
 //
 
 import SwiftUI
@@ -17,19 +18,20 @@ import SwiftData
 
 struct AttendanceCalendarView: View {
     let student: Student
-    /// 展示的天数窗口（默认 60 天，与 SWActivityHeatmap 默认一致）
+    /// Day window to render (default 60, matches SWActivityHeatmap)
     var days: Int = 60
-    /// 是否允许点击空白日期补打卡
+    /// Whether tapping an empty date allows a backfill check-in
     var allowBackfill: Bool = true
 
     @Environment(\.modelContext) private var modelContext
 
-    /// 点击的"待签到日期"，非 nil 则弹 CheckInSheet
+    /// The tapped "pending check-in date"; non-nil presents CheckInSheet
     @State private var pendingDate: Date?
 
     private let calendar = Calendar.current
 
-    /// 按"日"聚合的出勤状态（同一天多条记录取最后一条的状态——演示场景每天最多一条）
+    /// Per-day attendance status (when multiple records exist on one day,
+    /// the last wins — in this demo each day has at most one record).
     private var statusByDay: [Date: AttendanceStatus] {
         var dict: [Date: AttendanceStatus] = [:]
         for r in student.attendances {
@@ -39,7 +41,8 @@ struct AttendanceCalendarView: View {
         return dict
     }
 
-    /// 过去 N 天的日期数组（最旧 → 今天，与 SWActivityHeatmap.HeatmapGrid 顺序一致）
+    /// Array of dates for the past N days (oldest -> today, matching the
+    /// order in SWActivityHeatmap.HeatmapGrid)
     private var targetDays: [Date] {
         let today = calendar.startOfDay(for: Date())
         var list: [Date] = []
@@ -53,7 +56,7 @@ struct AttendanceCalendarView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // 标题行 + 图例
+            // Title row + legend
             HStack {
                 Label("出勤热力", systemImage: "calendar.badge.checkmark")
                     .font(.subheadline)
@@ -65,10 +68,10 @@ struct AttendanceCalendarView: View {
                     .foregroundStyle(.secondary)
             }
 
-            // 三色图例
+            // Three-color legend
             legend
 
-            // 网格（直接复用 SWActivityHeatmap.FlowLayout）
+            // Grid (reuses SWActivityHeatmap.FlowLayout directly)
             SWActivityHeatmap.FlowLayout(spacing: 3) {
                 ForEach(targetDays, id: \.self) { date in
                     cell(for: date)
@@ -97,7 +100,7 @@ struct AttendanceCalendarView: View {
         }
     }
 
-    // MARK: - 单元格
+    // MARK: - Cell
 
     private func cell(for date: Date) -> some View {
         let status = statusByDay[date]
@@ -114,7 +117,7 @@ struct AttendanceCalendarView: View {
             .fill(fillColor)
             .frame(width: 18, height: 18)
             .overlay(
-                // 今天加描边强调
+                // Stroke today's cell to emphasize it
                 RoundedRectangle(cornerRadius: 3)
                     .stroke(
                         calendar.isDateInToday(date) ? Color.primary.opacity(0.5) : .clear,
@@ -122,7 +125,7 @@ struct AttendanceCalendarView: View {
                     )
             )
             .onTapGesture {
-                // 仅在 1) 允许补打卡 2) 该日期未来 7 天内（演示用，避免点太远）3) 不晚于今天
+                // Only allow tap when 1) backfill is enabled and 2) the date is not in the future
                 guard allowBackfill else { return }
                 let today = calendar.startOfDay(for: Date())
                 guard date <= today else { return }
@@ -130,7 +133,7 @@ struct AttendanceCalendarView: View {
             }
     }
 
-    // MARK: - 图例
+    // MARK: - Legend
 
     private var legend: some View {
         HStack(spacing: 12) {

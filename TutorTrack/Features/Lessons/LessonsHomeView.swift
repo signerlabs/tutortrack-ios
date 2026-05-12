@@ -2,12 +2,14 @@
 //  LessonsHomeView.swift
 //  TutorTrack
 //
-//  「课时」Tab 主页：所有学员的课时进度一览。
-//  按 remainingLessons 升序排，剩余少的排前面，制造"该续费了"的视觉冲击。
-//  - 每行：大头像 + 姓名 + 课程徽章 + 大进度条 + 已上/总数文字
-//  - 剩余 ≤ 3 节挂红色"续费提醒" SWStatusBadge
-//  - 点行右下角「续费」按钮弹 RenewLessonsSheet（基于 .presentationDetents(.medium)）
-//  - 点卡片其他区域 → NavigationLink 推 StudentDetailView
+//  Lessons tab home: an at-a-glance lesson-progress list for every student.
+//  Sorted ascending by remainingLessons so the most urgent ones land at the
+//  top, creating a "time to renew" visual cue.
+//  - Each row: large avatar + name + course badge + thick progress bar + attended/total
+//  - When <= 3 lessons remain, attach a red "Renew" SWStatusBadge
+//  - The bottom-right "Renew" button presents RenewLessonsSheet
+//    (based on .presentationDetents(.medium))
+//  - Tapping elsewhere on the card pushes StudentDetailView via NavigationLink
 //
 
 import SwiftUI
@@ -17,10 +19,11 @@ struct LessonsHomeView: View {
     @Query private var allStudents: [Student]
     @Environment(\.modelContext) private var modelContext
 
-    /// 续费 sheet 关联的学员（nil = 不弹）
+    /// Student tied to the renewal sheet (nil = sheet hidden)
     @State private var renewingStudent: Student?
 
-    /// 按"剩余课时升序"排，相同剩余时按总课时升序，再退到姓名稳定
+    /// Sorted ascending by remainingLessons. Ties broken by totalLessons,
+    /// then by name for stable ordering.
     private var students: [Student] {
         allStudents.sorted { lhs, rhs in
             if lhs.remainingLessons != rhs.remainingLessons {
@@ -33,7 +36,7 @@ struct LessonsHomeView: View {
         }
     }
 
-    /// 需要提醒续费的学员数（用于顶部 KPI）
+    /// Number of students that need a renewal prompt (powers the header KPI)
     private var renewalCount: Int {
         students.filter(\.needsRenewal).count
     }
@@ -41,7 +44,7 @@ struct LessonsHomeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 14) {
-                // 顶部 KPI 卡（SWKPICard 风格）
+                // Header KPI cards (SWKPICard style)
                 kpiSection
                     .padding(.horizontal)
                     .padding(.top, 4)
@@ -80,7 +83,7 @@ struct LessonsHomeView: View {
         }
     }
 
-    // MARK: - 顶部 KPI
+    // MARK: - Header KPI
 
     private var kpiSection: some View {
         HStack(spacing: 10) {
@@ -126,7 +129,7 @@ struct LessonsHomeView: View {
         )
     }
 
-    // MARK: - 空态
+    // MARK: - Empty state
 
     private var emptyState: some View {
         VStack(spacing: 12) {
@@ -144,24 +147,26 @@ struct LessonsHomeView: View {
     }
 }
 
-// MARK: - 课时进度行
+// MARK: - Lesson progress row
 
-/// 单条学员课时进度，可点击进详情；右下角「续费」按钮独立 action
+/// A single student row tappable for the detail screen. The bottom-right
+/// "Renew" button is an independent action.
 private struct LessonProgressRow: View {
     let student: Student
     let onRenew: () -> Void
 
     var body: some View {
-        // 卡片整体一个外壳，内部上半 NavigationLink、下半独立 Button 行
-        // 这样避免 NavigationLink 和 Button 的 hit-test 冲突（iOS 16+ 常见陷阱）
+        // One outer card with two halves: the upper half is the NavigationLink,
+        // the lower half is a separate Button row. This avoids the classic
+        // NavigationLink + Button hit-test conflict (a common iOS 16+ pitfall).
         VStack(alignment: .leading, spacing: 12) {
-            // 上半：可点击进详情（NavigationLink）
+            // Upper half: tappable area pushing the detail view
             NavigationLink(value: student) {
                 upperPart
             }
             .buttonStyle(.plain)
 
-            // 下半：剩余课时 + 续费按钮，独立 HStack，不在 NavigationLink 内
+            // Lower half: remaining lessons + renew button, lives outside the link
             HStack {
                 Text("剩余 \(student.remainingLessons) 节")
                     .font(.subheadline)
@@ -197,7 +202,7 @@ private struct LessonProgressRow: View {
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
-    /// 上半区：头像 + 姓名 + 进度条（整块作为 NavigationLink 触发区）
+    /// Upper region: avatar + name + progress bar (the whole block is the NavigationLink hit area)
     private var upperPart: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
@@ -208,8 +213,9 @@ private struct LessonProgressRow: View {
                         Text(student.name)
                             .font(.headline)
                             .foregroundStyle(.primary)
-                        // 课程色徽章（与 StudentCard 风格一致，不复用 SWStatusBadge——
-                        // 后者只支持 5 种语义色，我们要的是 5 种课程色）
+                        // Course-color badge (matches StudentCard's style;
+                        // we don't reuse SWStatusBadge because it only carries
+                        // 5 semantic colors — we need 5 course-specific ones).
                         courseBadge
                     }
 
@@ -225,16 +231,16 @@ private struct LessonProgressRow: View {
                 }
             }
 
-            // 大进度条（课程色 tint）
+            // Thick progress bar (course-color tint)
             ProgressView(value: Double(student.attendedLessons),
                          total: Double(max(student.totalLessons, 1)))
                 .tint(student.courseType.color)
                 .frame(height: 8)
         }
-        .contentShape(Rectangle()) // 整个上半区域作为 link 命中区
+        .contentShape(Rectangle()) // The whole upper area is the link hit area
     }
 
-    /// 圆形头像（与 StudentCard 一致风格）
+    /// Circular avatar (matches StudentCard's style)
     private var avatar: some View {
         ZStack {
             Circle()
@@ -246,7 +252,7 @@ private struct LessonProgressRow: View {
         }
     }
 
-    /// 课程徽章（胶囊形，课程色填充；与 StudentCard.courseBadge 同款）
+    /// Course badge (capsule shape, course-color fill; identical to StudentCard.courseBadge)
     private var courseBadge: some View {
         Text(student.courseType.displayName)
             .font(.caption2)

@@ -2,8 +2,9 @@
 //  MockSeed.swift
 //  TutorTrack
 //
-//  首启 seed：5 个 mock 学员，每课程类型一名，每人带过去 2 周的随机出勤记录 + 评语。
-//  让录屏时随便点哪个学员都有数据可演示 AI 周报。
+//  First-launch seed: 5 mock students, one per course type, each with the past
+//  2 weeks of randomized attendance records + notes. This way any student picked
+//  in a screen recording already has data to drive the AI weekly report.
 //
 
 import Foundation
@@ -12,7 +13,7 @@ import SwiftData
 @MainActor
 enum MockSeed {
 
-    /// 主入口：检测空库则灌入种子数据
+    /// Main entry: seed data if the store is empty
     static func seedIfNeeded(in context: ModelContext) {
         do {
             let count = try context.fetchCount(FetchDescriptor<Student>())
@@ -23,26 +24,27 @@ enum MockSeed {
                 context.insert(s)
             }
 
-            // 为每位学员注入过去 14 天出勤
+            // Inject the past 14 days of attendance for every student
             for s in students {
                 let records = makeMockAttendances(for: s)
                 for r in records {
                     r.student = s
                     context.insert(r)
                 }
-                // 已上完课时 = 出勤次数
+                // Lessons attended = number of present records
                 s.attendedLessons = records.filter { $0.status == .present }.count
             }
 
             try context.save()
         } catch {
-            print("[MockSeed] 种子数据写入失败：\(error)")
+            print("[MockSeed] Failed to write seed data: \(error)")
         }
     }
 
-    // MARK: - 学员模板
+    // MARK: - Student templates
 
-    /// 5 个学员，每课程类型一名，姓名 + 总课时 + 已上 + 联系方式 + 备注全部预置
+    /// 5 students, one per course type. Name + total lessons + attended +
+    /// contact + notes are all pre-filled.
     private static func makeMockStudents() -> [Student] {
         [
             Student(
@@ -83,29 +85,31 @@ enum MockSeed {
         ]
     }
 
-    // MARK: - 出勤记录（过去 14 天）
+    // MARK: - Attendance records (past 14 days)
 
-    /// 为单个学员生成过去 14 天的随机出勤记录。
-    /// - 出勤率约 70%，缺勤 / 请假各占少量
-    /// - 上课日有 70% 概率会留评语（≤ 50 字），评语随机抽课程模板词典
-    /// - deterministic：用学员 name 的 hash 做种子，保证同一学员每次启动看到一致历史
+    /// Generate randomized attendance records for one student over the past 14 days.
+    /// - Roughly 70% present, small share of absent / excused
+    /// - On class days there is a 70% chance a note (<= 50 chars) is written,
+    ///   drawn from the course template dictionary
+    /// - Deterministic: seeded by the student's name hash so the same student
+    ///   sees the same history on every launch
     private static func makeMockAttendances(for student: Student) -> [AttendanceRecord] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
-        // deterministic seed：拿学员 name 做哈希
+        // Deterministic seed: hash of the student name
         var generator = SeededGenerator(seed: UInt64(abs(student.name.hashValue)))
 
         let course = student.courseType
         var records: [AttendanceRecord] = []
 
-        // 训练机构通常每周 2-3 次课，这里取偶数天上课的方案
+        // Tutoring centers usually run 2-3 classes per week — schedule on even-day offsets
         for offset in 0..<14 {
-            // 每隔一天上一次课（offset 偶数）
+            // One class every other day (even offset)
             guard offset % 2 == 0 else { continue }
             guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else { continue }
 
-            // 70% 出勤 / 20% 缺勤 / 10% 请假
+            // 70% present / 20% absent / 10% excused
             let roll = Int.random(in: 0..<100, using: &generator)
             let status: AttendanceStatus
             if roll < 70 {
@@ -116,7 +120,8 @@ enum MockSeed {
                 status = .excused
             }
 
-            // 70% 概率留评语；出勤优先留正面 + 改进点，缺勤 / 请假留事由
+            // 70% chance to leave a note; present picks positive + improvement,
+            // absent / excused records a reason
             let noteText: String = {
                 guard Int.random(in: 0..<100, using: &generator) < 70 else { return "" }
                 switch status {
@@ -124,7 +129,7 @@ enum MockSeed {
                     let practice = course.practiceKeywords.randomElement(using: &generator) ?? ""
                     let pos = course.evaluationKeywords.positive.randomElement(using: &generator) ?? ""
                     let imp = course.evaluationKeywords.improvement.randomElement(using: &generator) ?? ""
-                    // 三选二拼接（让录屏不重复）
+                    // Pick 2 out of 3 to keep screen recordings non-repetitive
                     let parts = [practice, pos, imp]
                         .filter { !$0.isEmpty }
                         .shuffled(using: &generator)
@@ -148,10 +153,11 @@ enum MockSeed {
     }
 }
 
-// MARK: - Deterministic RNG（线性同余）
+// MARK: - Deterministic RNG (LCG)
 
-/// 简单的 deterministic 随机数发生器。Swift 标准库 `SystemRandomNumberGenerator` 不保证可重复，
-/// 我们要 mock 数据每次启动一致，所以自己实现一个。
+/// A simple deterministic random number generator. Swift's standard
+/// `SystemRandomNumberGenerator` does not guarantee reproducibility, so we
+/// ship a small custom one to keep mock data identical across launches.
 private struct SeededGenerator: RandomNumberGenerator {
     private var state: UInt64
 
@@ -160,7 +166,7 @@ private struct SeededGenerator: RandomNumberGenerator {
     }
 
     mutating func next() -> UInt64 {
-        // 线性同余：xorshift64
+        // xorshift64
         state ^= state << 13
         state ^= state >> 7
         state ^= state << 17

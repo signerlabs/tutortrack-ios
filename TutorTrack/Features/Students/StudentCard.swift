@@ -2,8 +2,10 @@
 //  StudentCard.swift
 //  TutorTrack
 //
-//  单张学员卡片：左侧课程色圆形头像（SF Symbol）+ 右侧姓名/课程徽章/剩余课时。
-//  剩余 ≤ 3 节时整张卡的剩余课时数标红，引出"该续费了"的紧迫感。
+//  A single student card: left side shows a circular course-colored avatar
+//  (SF Symbol); the right side stacks name / course badge / remaining lessons.
+//  Once <= 3 lessons remain, the count flips red to create a "time to renew"
+//  urgency cue.
 //
 
 import SwiftUI
@@ -14,19 +16,19 @@ struct StudentCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            // 头像：圆形课程色 + SF Symbol
+            // Avatar: circular course-color fill + SF Symbol
             avatar
 
             VStack(alignment: .leading, spacing: 6) {
-                // 姓名
+                // Name
                 Text(student.name)
                     .font(.headline)
                     .foregroundStyle(.primary)
 
-                // 课程类型徽章
+                // Course-type badge
                 courseBadge
 
-                // 剩余课时
+                // Remaining lessons
                 HStack(spacing: 4) {
                     Image(systemName: "graduationcap")
                         .font(.caption2)
@@ -56,9 +58,9 @@ struct StudentCard: View {
         .shadow(color: .black.opacity(0.04), radius: 4, x: 0, y: 2)
     }
 
-    // MARK: - 子视图
+    // MARK: - Subviews
 
-    /// 圆形头像 = 课程色背景 + 课程 SF Symbol
+    /// Circular avatar = course-color background + course SF Symbol
     private var avatar: some View {
         ZStack {
             Circle()
@@ -70,7 +72,7 @@ struct StudentCard: View {
         }
     }
 
-    /// 课程徽章（胶囊形，课程色填充）
+    /// Course badge (capsule shape, course-color fill)
     private var courseBadge: some View {
         Text(student.courseType.displayName)
             .font(.caption2)

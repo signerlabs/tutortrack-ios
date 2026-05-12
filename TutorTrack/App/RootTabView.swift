@@ -2,20 +2,21 @@
 //  RootTabView.swift
 //  TutorTrack
 //
-//  4-Tab 主框架。基于 SWRootTabView 模板（ShipSwift Recipe: component-root-tab-view），
-//  4 个 Tab 各自指向 Features 子模块的 Home View。
+//  Main 4-tab shell based on the SWRootTabView template
+//  (ShipSwift Recipe: component-root-tab-view). Each tab points to the
+//  Home view of one Features sub-module.
 //
 
 import SwiftUI
 import SwiftData
 
 struct RootTabView: View {
-    /// 持久化当前选中 Tab，避免来回切 Tab 丢失选择
+    /// Persist the selected tab so users do not lose their position when switching back.
     @AppStorage("selectedTab") private var selectedTab: String = "students"
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            // MARK: - 学员
+            // MARK: - Students
             Tab(value: "students") {
                 NavigationStack {
                     StudentsHomeView()
@@ -29,7 +30,7 @@ struct RootTabView: View {
                 .environment(\.symbolVariants, .none)
             }
 
-            // MARK: - 课时
+            // MARK: - Lessons
             Tab(value: "lessons") {
                 NavigationStack {
                     LessonsHomeView()
@@ -43,7 +44,7 @@ struct RootTabView: View {
                 .environment(\.symbolVariants, .none)
             }
 
-            // MARK: - 出勤
+            // MARK: - Attendance
             Tab(value: "attendance") {
                 NavigationStack {
                     AttendanceHomeView()
@@ -57,7 +58,7 @@ struct RootTabView: View {
                 .environment(\.symbolVariants, .none)
             }
 
-            // MARK: - 周报
+            // MARK: - Weekly Report
             Tab(value: "report") {
                 NavigationStack {
                     WeeklyReportHomeView()

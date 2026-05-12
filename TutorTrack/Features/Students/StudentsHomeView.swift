@@ -2,7 +2,7 @@
 //  StudentsHomeView.swift
 //  TutorTrack
 //
-//  学员 Tab 首页：搜索栏 + 学员卡片列表 + 右上角新增按钮。
+//  Students tab home: search bar + student card list + top-right add button.
 //
 
 import SwiftUI
@@ -13,7 +13,7 @@ struct StudentsHomeView: View {
     @State private var searchText: String = ""
     @State private var showAddSheet: Bool = false
 
-    /// 按搜索关键词过滤
+    /// Filter by the search keyword
     private var filteredStudents: [Student] {
         guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else {
             return students
@@ -28,7 +28,7 @@ struct StudentsHomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                // 搜索栏（ShipSwift Recipe: component-search-bar）
+                // Search bar (ShipSwift Recipe: component-search-bar)
                 SWSearchBar(text: $searchText, placeholder: "搜索学员姓名 / 课程")
                     .padding(.horizontal)
                     .padding(.top, 4)
@@ -71,7 +71,7 @@ struct StudentsHomeView: View {
         }
     }
 
-    // MARK: - 空态
+    // MARK: - Empty state
 
     private var emptyState: some View {
         VStack(spacing: 12) {

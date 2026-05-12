@@ -2,27 +2,28 @@
 //  CourseType.swift
 //  TutorTrack
 //
-//  课程类型枚举，5 种预置（出海营销 / 龙虾配置 / Claude Code / AI 增长 / SwiftUI 进阶）。
-//  每种课程附带：
-//    - 显示名（中文）
-//    - 课程色（从 Assets.xcassets 读 ColorSet）
-//    - SF Symbol 图标（作为学员头像 fallback）
-//    - 模板词典（WeeklyReportEngine 用来拼 AI 段落）
+//  Course-type enum with 5 presets (Overseas Marketing / Lobster Rig /
+//  Claude Code / AI Growth / SwiftUI Advanced). Each course carries:
+//    - Display name (Chinese)
+//    - Course color (loaded from Assets.xcassets ColorSet)
+//    - SF Symbol icon (used as student avatar fallback)
+//    - Template dictionary (used by WeeklyReportEngine to compose AI paragraphs)
 //
-//  注：case raw value 保留 piano / english / coding / math / art，纯内部代号，
-//  Engine 与 MockSeed 的 switch 引用无需调整；observers 看到的全是新 displayName。
+//  Note: the raw values are kept as piano / english / coding / math / art —
+//  purely internal codenames. Engine and MockSeed switches need no changes;
+//  observers only ever see the updated displayName.
 //
 
 import SwiftUI
 
 enum CourseType: String, Codable, CaseIterable {
-    case piano       // 出海营销
-    case english     // 龙虾配置（AI 推理硬件）
+    case piano       // Overseas Marketing
+    case english     // Lobster Rig (AI inference hardware)
     case coding      // Claude Code
-    case math        // AI 增长
-    case art         // SwiftUI 进阶
+    case math        // AI Growth
+    case art         // SwiftUI Advanced
 
-    // MARK: - 显示名
+    // MARK: - Display name
 
     var displayName: String {
         switch self {
@@ -34,7 +35,7 @@ enum CourseType: String, Codable, CaseIterable {
         }
     }
 
-    // MARK: - 课程色（Assets.xcassets/Colors/）
+    // MARK: - Course color (Assets.xcassets/Colors/)
 
     var color: Color {
         switch self {
@@ -46,7 +47,7 @@ enum CourseType: String, Codable, CaseIterable {
         }
     }
 
-    // MARK: - 头像 SF Symbol
+    // MARK: - Avatar SF Symbol
 
     var iconName: String {
         switch self {
@@ -58,9 +59,10 @@ enum CourseType: String, Codable, CaseIterable {
         }
     }
 
-    // MARK: - 模板词典（AI 周报拼接素材）
+    // MARK: - Template dictionary (raw material for AI weekly report)
 
-    /// 本课程的典型练习内容关键词，AI 段落引擎按周次 + 学员 id 做 deterministic 选词
+    /// Typical practice-content keywords for this course. The AI paragraph
+    /// engine deterministically picks from these using week-index + student id.
     var practiceKeywords: [String] {
         switch self {
         case .piano:
@@ -121,7 +123,8 @@ enum CourseType: String, Codable, CaseIterable {
         }
     }
 
-    /// 评价关键词（褒贬中性各几个，AI 引擎按出勤率挑句子）
+    /// Evaluation keywords (a few positive / improvement phrases each;
+    /// the AI engine picks sentences based on attendance rate).
     var evaluationKeywords: (positive: [String], improvement: [String]) {
         switch self {
         case .piano:

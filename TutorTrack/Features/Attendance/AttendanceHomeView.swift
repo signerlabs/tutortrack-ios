@@ -2,11 +2,12 @@
 //  AttendanceHomeView.swift
 //  TutorTrack
 //
-//  「出勤」Tab 主页：
-//  - 顶部「今日签到」：今天还没签到的学员列表，每位 1 个签到按钮
-//    （演示阶段简化：任何学员任何时候都能签到，没有"今天有课"的排课系统）
-//  - 中部 picker 切换学员
-//  - 下部 AttendanceCalendarView 展示该学员热力图（过去 60 天）
+//  Attendance tab home:
+//  - Top "Today's Check-in" row: every student who has not checked in yet,
+//    with a one-tap check-in button (demo simplification: any student can
+//    check in any time — there's no class-schedule system).
+//  - Middle picker switches the focused student.
+//  - Bottom AttendanceCalendarView shows that student's past-60-day heatmap.
 //
 
 import SwiftUI
@@ -16,23 +17,24 @@ struct AttendanceHomeView: View {
     @Query(sort: \Student.createdAt, order: .reverse) private var allStudents: [Student]
     @Environment(\.modelContext) private var modelContext
 
-    /// 当前选中学员的 UUID（不用 PersistentIdentifier，UUID 是值类型且 Student.id 已具备）
+    /// Currently focused student's UUID (we use UUID instead of PersistentIdentifier
+    /// because Student.id is already a UUID and value types are easier to thread.)
     @State private var focusedStudentID: UUID?
-    /// 待签到的学员（非 nil 弹 CheckInSheet）
+    /// Student awaiting check-in (non-nil presents CheckInSheet)
     @State private var checkingInStudent: Student?
 
     private let calendar = Calendar.current
 
-    /// 今天 0 点（按日聚合的边界）
+    /// Midnight today (boundary for day-level aggregation)
     private var today: Date { calendar.startOfDay(for: Date()) }
 
-    /// 当前聚焦的学员实例
+    /// The currently focused student instance
     private var focusedStudent: Student? {
         guard let id = focusedStudentID else { return allStudents.first }
         return allStudents.first { $0.id == id } ?? allStudents.first
     }
 
-    /// 该学员今天是否已签到
+    /// Whether this student has already checked in today
     private func hasCheckedInToday(_ s: Student) -> Bool {
         s.attendances.contains { calendar.isDateInToday($0.date) }
     }
@@ -40,10 +42,10 @@ struct AttendanceHomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // 今日签到区
+                // Today's check-in section
                 todaySection
 
-                // 学员选择 + 热力图
+                // Student picker + heatmap
                 if let focused = focusedStudent {
                     studentPicker(selected: focused)
                     AttendanceCalendarView(student: focused)
@@ -68,14 +70,14 @@ struct AttendanceHomeView: View {
             }
         }
         .onAppear {
-            // 默认选中第一个学员（按 createdAt desc 排序后的第一个）
+            // Default to the first student (by createdAt desc)
             if focusedStudentID == nil {
                 focusedStudentID = allStudents.first?.id
             }
         }
     }
 
-    // MARK: - 今日签到
+    // MARK: - Today's check-in
 
     private var todaySection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -108,11 +110,11 @@ struct AttendanceHomeView: View {
         }
     }
 
-    /// 单张签到卡（横滚）
+    /// A single check-in card (horizontal scroll)
     private func todayCheckInCard(student: Student) -> some View {
         let done = hasCheckedInToday(student)
         return VStack(spacing: 8) {
-            // 头像
+            // Avatar
             ZStack {
                 Circle()
                     .fill(student.courseType.color.opacity(done ? 0.45 : 0.85))
@@ -121,7 +123,7 @@ struct AttendanceHomeView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.white)
                 if done {
-                    // 右下角 ✓ 角标
+                    // Bottom-right ✓ badge
                     Circle()
                         .fill(Color.green)
                         .frame(width: 18, height: 18)
@@ -139,7 +141,8 @@ struct AttendanceHomeView: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)
 
-            // 主按钮：未签到 → 签到；已签到 → 再签一次（演示场景允许重复）
+            // Primary button: not checked in -> "Check in"; already checked in
+            // -> "Check in again" (demo allows repeated check-ins).
             Button {
                 checkingInStudent = student
             } label: {
@@ -169,7 +172,7 @@ struct AttendanceHomeView: View {
         )
     }
 
-    // MARK: - 学员选择器
+    // MARK: - Student picker
 
     private func studentPicker(selected: Student) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -209,7 +212,7 @@ struct AttendanceHomeView: View {
         }
     }
 
-    // MARK: - 空态
+    // MARK: - Empty state
 
     private var emptyState: some View {
         VStack(spacing: 12) {

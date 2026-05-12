@@ -2,8 +2,9 @@
 //  StudentDetailView.swift
 //  TutorTrack
 //
-//  学员详情：头部卡（头像 + 姓名 + 课程徽章）+ 进度条（课程色 tint）+ 续费 Stepper
-//  + 签到历史评语列表（SWBulletPointText 按课程色 bullet）+ 备注 / 联系方式。
+//  Student detail screen: header card (avatar + name + course badge) +
+//  course-tinted progress bar + renew Stepper + attendance-note history list
+//  (SWBulletPointText with course-color bullets) + notes / contact info.
 //
 
 import SwiftUI
@@ -13,7 +14,7 @@ struct StudentDetailView: View {
     @Bindable var student: Student
     @Environment(\.modelContext) private var modelContext
 
-    /// 按时间倒序的有评语的出勤记录（演示「签到历史评语」用）
+    /// Attendance records with non-empty notes, newest first (powers the history list)
     private var noteRecords: [AttendanceRecord] {
         student.attendances
             .filter { !$0.noteText.isEmpty }
@@ -23,18 +24,18 @@ struct StudentDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 18) {
-                // 头部
+                // Header
                 header
 
-                // 课时进度卡
+                // Lesson progress card
                 progressCard
 
-                // 签到历史评语
+                // Attendance note history
                 if !noteRecords.isEmpty {
                     notesCard
                 }
 
-                // 联系方式 + 备注
+                // Contact + notes
                 infoCard
             }
             .padding(.horizontal)
@@ -45,7 +46,7 @@ struct StudentDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    // MARK: - 头部卡
+    // MARK: - Header card
 
     private var header: some View {
         VStack(spacing: 10) {
@@ -62,7 +63,7 @@ struct StudentDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            // 课程徽章
+            // Course badge
             Text(student.courseType.displayName)
                 .font(.subheadline)
                 .fontWeight(.semibold)
@@ -77,7 +78,7 @@ struct StudentDetailView: View {
         .padding(.top, 8)
     }
 
-    // MARK: - 进度卡
+    // MARK: - Progress card
 
     private var progressCard: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -92,7 +93,7 @@ struct StudentDetailView: View {
                     .foregroundStyle(.secondary)
             }
 
-            // 原生进度条，按课程色 tint
+            // Native progress bar, tinted with course color
             ProgressView(value: Double(student.attendedLessons),
                          total: Double(max(student.totalLessons, 1)))
                 .tint(student.courseType.color)
@@ -112,7 +113,7 @@ struct StudentDetailView: View {
 
                 Spacer()
 
-                // 续费 Stepper（SWStepper Recipe: component-stepper）
+                // Renewal Stepper (SWStepper Recipe: component-stepper)
                 HStack(spacing: 8) {
                     Text("续费")
                         .font(.caption)
@@ -132,7 +133,7 @@ struct StudentDetailView: View {
         )
     }
 
-    /// SWStepper 通过递增递减 totalLessons 来模拟"续费"
+    /// SWStepper simulates "renew" by incrementing / decrementing totalLessons
     private var renewBinding: Binding<Int> {
         Binding(
             get: { student.totalLessons },
@@ -148,7 +149,7 @@ struct StudentDetailView: View {
         )
     }
 
-    // MARK: - 签到历史评语
+    // MARK: - Attendance note history
 
     private var notesCard: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -191,7 +192,7 @@ struct StudentDetailView: View {
         )
     }
 
-    // MARK: - 联系方式 + 备注
+    // MARK: - Contact + notes
 
     private var infoCard: some View {
         VStack(alignment: .leading, spacing: 12) {

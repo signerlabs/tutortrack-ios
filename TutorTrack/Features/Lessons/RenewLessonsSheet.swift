@@ -2,10 +2,11 @@
 //  RenewLessonsSheet.swift
 //  TutorTrack
 //
-//  续费 bottom sheet（基于 .presentationDetents(.medium)，与 SWAddSheet 同款交互骨架）。
-//  - SWStepper 调整本次新增节数（默认 +10，下限 1）
-//  - 确认后 student.totalLessons += addedLessons，try modelContext.save()
-//  - SWAlertManager 弹 success toast 反馈
+//  Renewal bottom sheet (based on .presentationDetents(.medium); shares the
+//  interaction skeleton with SWAddSheet).
+//  - SWStepper adjusts the lessons to add (default +10, minimum 1)
+//  - On confirm, student.totalLessons += addedLessons and try modelContext.save()
+//  - SWAlertManager fires a success toast for feedback
 //
 
 import SwiftUI
@@ -15,13 +16,13 @@ struct RenewLessonsSheet: View {
     @Bindable var student: Student
     @Environment(\.modelContext) private var modelContext
 
-    /// 关闭 sheet 的回调（外部 @State = nil）
+    /// Sheet-dismiss callback (parent sets its @State to nil)
     let onClose: () -> Void
 
-    /// 本次要新增的节数（默认 10）
+    /// Lessons to add in this transaction (default 10)
     @State private var addLessons: Int = 10
 
-    /// SWStepper 用的 binding，下限钳到 1（不允许续费 0 节或负数）
+    /// Binding for SWStepper; clamps to [1, 99] (no zero or negative renewals)
     private var addBinding: Binding<Int> {
         Binding(
             get: { addLessons },
@@ -31,7 +32,7 @@ struct RenewLessonsSheet: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // 顶部标题
+            // Header
             VStack(spacing: 6) {
                 ZStack {
                     Circle()
@@ -55,7 +56,7 @@ struct RenewLessonsSheet: View {
             }
             .padding(.top, 8)
 
-            // 当前状态摘要
+            // Current state summary
             HStack(spacing: 16) {
                 summaryCell(label: "已上", value: "\(student.attendedLessons)")
                 Divider().frame(height: 28)
@@ -75,7 +76,7 @@ struct RenewLessonsSheet: View {
                     .stroke(student.courseType.color.opacity(0.15), lineWidth: 1)
             )
 
-            // 续费数量行（SWStepper Recipe: component-stepper）
+            // Renewal-amount row (SWStepper Recipe: component-stepper)
             HStack {
                 Text("本次续费")
                     .font(.subheadline)
@@ -89,7 +90,7 @@ struct RenewLessonsSheet: View {
             }
             .padding(.horizontal, 4)
 
-            // 续费后新状态预览
+            // Post-renewal state preview
             HStack(spacing: 6) {
                 Image(systemName: "arrow.right.circle.fill")
                     .font(.caption)
@@ -101,7 +102,7 @@ struct RenewLessonsSheet: View {
 
             Spacer(minLength: 0)
 
-            // 按钮组（与 SWAddSheet 一致风格）
+            // Button row (matches SWAddSheet's style)
             HStack(spacing: 10) {
                 Button {
                     onClose()
@@ -130,7 +131,7 @@ struct RenewLessonsSheet: View {
         .presentationDragIndicator(.visible)
     }
 
-    // MARK: - 子视图
+    // MARK: - Subviews
 
     private func summaryCell(label: String, value: String, tint: Color = .primary) -> some View {
         VStack(spacing: 4) {

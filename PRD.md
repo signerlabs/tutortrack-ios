@@ -1,51 +1,50 @@
-# TutorTrack 极简 PRD
+# TutorTrack — Minimal PRD
 
-> 课外培训机构学员管理 App，作为 2026-05-13 ShipSwift 视频录屏素材源。
-> 视频脚本：`1-1-signerlabs-marketing/projects/shipswift/posts/2026-05-13-视频脚本-vibecoding一个课外培训学员管理App.md`
+> Student tracker for tutors / coaches running their own training business. Source material for the ShipSwift video walkthrough released on 2026-05-13.
 
-## 给谁用
+## Who It's For
 
-课外培训机构的老师（钢琴课 / 英语课 / 编程课 / 数学课 / 美术课……）。替代市面 SaaS（贵 + 不灵活 + 数据不属于老师），让老师自己掌握学员档案、课时进度、出勤、家长沟通。
+Coaches running their own training (one-on-one or small group) — piano teachers, English tutors, coding instructors, math coaches, art teachers, or in the open-source version: vibe-coding-adjacent skill teachers (overseas marketing, GPU rig setup, Claude Code, AI growth, SwiftUI advanced). A replacement for the off-the-shelf SaaS that's expensive, inflexible, and doesn't actually let the trainer own their student data.
 
-## 单端角色
+## Single Role
 
-- **老师端（B 端，唯一端）**：管学员档案 + 跟课时 + 打出勤 + 出家长周报 PDF
-- 家长不需要装 App——老师导出 PDF 直接发家长群即可
+- **Trainer side (B-side, the only side)**: manage student roster + track lessons + check attendance + export learner weekly report PDF
+- Learners don't need to install an app — the trainer exports the PDF and shares it via DM / group chat directly
 
-## 4 个核心模块
+## 4 Core Modules
 
-| # | 模块 | 功能 |
+| # | Module | Functionality |
 |---|------|------|
-| 1 | 学员档案 | 卡片视图。每张卡：学员姓名 / 头像 / 课程类型（预置 5 种枚举：钢琴粉 / 英语蓝 / 编程紫 / 数学橙 / 美术绿，暂不支持自定义）/ 剩余课时 / 家长联系方式 / 备注 |
-| 2 | 课时跟踪 | 进度条样式。已上 X 节 / 共购买 Y 节，剩余课时实时展示；剩余 ≤ 3 节标红提醒续费 |
-| 3 | 出勤打卡 | 老师上课时点一下「签到」，自动记日期 + 时间；签到时可选填本节课评语（≤ 50 字，作为周报评语数据源）；可补打卡；出勤日历视图（绿点=出勤 / 红点=缺勤 / 灰点=请假） |
-| 4 | 家长周报 PDF（**杀手痛点**） | **AI 自动写人话周报**：基于本周签到时录入的零碎评语 + 出勤情况 + 课程类型，AI 聚合成"小明本周练习了拜厄第 18 条，节奏稳但右手力度偏弱"这样的人话段落（不是模板填空），再渲染成 PDF（学员姓名 / 本周出勤天数 / 本周练习内容 / AI 生成评语段落）；通过 iOS 系统 ShareSheet 一键分享到微信/家长群。**SaaS 只能填模板，不会写人话——这是 demo 的核心演示画面** |
+| 1 | Student Roster | Card view. Each card: name / avatar / course type (one of five preset themes, no custom courses) / sessions remaining / contact / notes |
+| 2 | Lesson Tracking | Progress bar style. "X / Y sessions completed", remaining live updated; remaining ≤ 3 flags a red renewal reminder |
+| 3 | Attendance Check-in | Tap "check in" during class → records date + time + optional session note (≤ 50 chars, feeds the weekly report). Backfill supported. Calendar heatmap: green = present / red = absent / gray = excused |
+| 4 | Weekly Report PDF (**killer screen**) | **AI auto-writes a natural-language report**: based on the session notes recorded during check-in + attendance + course type, the engine composes a paragraph like *"Mark practiced vLLM PagedAttention tuning this week, with stable inference benchmarks but cooling solution still pending"* — not template fill-in-the-blank, but assembled prose — then renders to PDF (student name / weekly attendance / topics practiced / generated paragraph). Share via system ShareSheet to DM / group chat in one tap. **The market SaaS can only fill templates — this is the core demo screen** |
 
-## 技术栈
+## Tech Stack
 
 - **iOS 17+ SwiftUI**
-- **必须用 ShipSwift Recipe 开发**，最大化复用组件（学员卡片 / 进度条 / 日历 / 列表 / 表单 / PDF 渲染等已有模块直接拼）
-- 本地数据用 SwiftData（demo 不接 AWS，纯本地 mock 即可）
+- **Must build on ShipSwift recipes** — maximize component reuse (student card / progress bar / calendar / list / form / PDF rendering all come from existing modules)
+- Local data via SwiftData (no AWS for the demo, pure local mock)
 
-## 视觉风格
+## Visual Style
 
-- 主色：教育行业清爽配色（米白底 + 课程类型用色块区分：钢琴=粉、英语=蓝、编程=紫、数学=橙、美术=绿）
-- 学员卡片简洁：头像 + 姓名 + 课程色条 + 剩余课时
-- PDF 模板用素雅风格（白底 + 黑字 + 课程色细线），符合家长群发场景
+- Primary: clean education-industry palette (warm ivory background + course-type color blocks: pink / blue / purple / orange / green for the five courses)
+- Student cards are simple: avatar + name + course-color strip + sessions remaining
+- PDF template is restrained (white background + black text + course-color thin separator), appropriate for DM / group-chat sharing
 
-## MVP 范围
+## MVP Scope
 
-**先做这些**：
-- 学员档案 + 课时跟踪 + 出勤打卡 + AI 周报 PDF 闭环跑通
-- 老师端 UI 完整可演示
-- 进度条颜色按课程类型区分（视频演示亮点）
-- **AI 周报生成**：调用 LLM（可走 ShipSwift Recipe 的 LLM 封装）把零碎评语 + 出勤 + 课程类型聚合成人话段落
-- 周报 PDF 自动渲染 + 系统分享面板（保存到相册 / 发微信）
+**In scope**:
+- End-to-end loop: roster + lesson tracking + attendance + AI report PDF
+- Complete demoable trainer-side UI
+- Progress bar color-tinted by course type (a visual highlight for the video)
+- **AI weekly report generation**: deterministic local template composer that assembles the per-session notes + attendance + course type into a coherent paragraph
+- PDF auto-rendered + system share sheet (save to camera roll / send to chat)
 
-**不做**：
-- 家长端 App（不需要）、线上排课、视频教学、收款分账
-- 多老师协作、跨机构同步、生产级稳健性（无需 e2e 测试、无需 CI、无需精细化错误处理）
+**Out of scope**:
+- Learner-side app (not needed), online scheduling, video instruction, payment splitting
+- Multi-trainer collaboration, cross-org sync, production-grade robustness
 
-## 工程目的
+## Engineering Goal
 
-作为 5/13 视频录屏素材源，主公会用 Cursor / Claude Code 跑一遍生成过程录屏 + 上手把玩成品 App。**重点是"AI 能拼出来 + 看起来像真 App + 课程色块 + AI 自动写人话周报"——核心演示画面是 PDF 周报里 AI 生成的人话段落（不是模板填空），让培训老师看完想"卧槽我必须自己做"**，不需要生产级稳健性。
+Source material for the 2026-05-13 video walkthrough — the model runs through a fresh generation pass on Cursor / Claude Code while the final app is demoed live. **The point is "AI can compose this + it looks like a real app + course-coded color blocks + AI-written natural-language report"** — the core demo screen is the PDF report with assembled prose (not template fill-in), so a viewing trainer thinks *"holy shit, I have to build my own"*. Production-grade robustness is not required.

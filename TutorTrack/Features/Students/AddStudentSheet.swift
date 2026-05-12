@@ -2,8 +2,9 @@
 //  AddStudentSheet.swift
 //  TutorTrack
 //
-//  新增学员 bottom sheet。包含姓名 / 课程类型选择器 / 总课时输入 / 家长联系方式 / 备注。
-//  录入后立即写入 SwiftData，并通过 SWAlertManager 弹 success toast。
+//  Add-student bottom sheet. Captures name / course-type picker / total lessons /
+//  parent contact / notes. On submit it persists to SwiftData and fires a
+//  success toast via SWAlertManager.
 //
 
 import SwiftUI
@@ -19,7 +20,7 @@ struct AddStudentSheet: View {
     @State private var parentContact: String = ""
     @State private var notes: String = ""
 
-    /// 表单是否可提交
+    /// Whether the form can be submitted
     private var canSubmit: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty && totalLessons > 0
     }
@@ -27,7 +28,7 @@ struct AddStudentSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                // MARK: - 基础信息
+                // MARK: - Basic info
                 Section {
                     TextField("学员姓名", text: $name)
                         .textInputAutocapitalization(.never)
@@ -35,9 +36,9 @@ struct AddStudentSheet: View {
                     Text("基础信息")
                 }
 
-                // MARK: - 课程类型
+                // MARK: - Course type
                 Section {
-                    // 5 个课程色 chip 横向铺开
+                    // 5 course-color chips laid out horizontally
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(CourseType.allCases, id: \.self) { course in
@@ -50,7 +51,7 @@ struct AddStudentSheet: View {
                     Text("课程类型")
                 }
 
-                // MARK: - 课时
+                // MARK: - Lessons
                 Section {
                     HStack {
                         Text("已购买课时")
@@ -61,7 +62,7 @@ struct AddStudentSheet: View {
                     Text("课时")
                 }
 
-                // MARK: - 联系方式 & 备注
+                // MARK: - Contact & notes
                 Section {
                     TextField("联系方式（X / 微信 / 邮箱，可选）", text: $parentContact)
                     TextField("备注（可选）", text: $notes, axis: .vertical)
@@ -86,7 +87,7 @@ struct AddStudentSheet: View {
         .presentationDetents([.large])
     }
 
-    // MARK: - 课程 chip
+    // MARK: - Course chip
 
     private func courseChip(_ course: CourseType) -> some View {
         let isSelected = selectedCourse == course
@@ -113,7 +114,7 @@ struct AddStudentSheet: View {
         .buttonStyle(.plain)
     }
 
-    // MARK: - 保存
+    // MARK: - Save
 
     private func save() {
         let student = Student(
