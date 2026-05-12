@@ -196,7 +196,7 @@ struct StudentDetailView: View {
     private var infoCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("家长信息", systemImage: "person.crop.rectangle.fill")
+                Label("联系方式 / 备注", systemImage: "person.crop.rectangle.fill")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.courseType.color)
@@ -204,13 +204,13 @@ struct StudentDetailView: View {
             }
 
             if !student.parentContact.isEmpty {
-                row(icon: "phone.fill", text: student.parentContact)
+                row(icon: "at", text: student.parentContact)
             }
             if !student.notes.isEmpty {
                 row(icon: "note.text", text: student.notes)
             }
             if student.parentContact.isEmpty && student.notes.isEmpty {
-                Text("暂无家长联系方式 / 备注")
+                Text("暂无联系方式 / 备注")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }

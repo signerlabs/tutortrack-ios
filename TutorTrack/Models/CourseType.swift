@@ -2,32 +2,35 @@
 //  CourseType.swift
 //  TutorTrack
 //
-//  课程类型枚举，5 种预置（钢琴 / 英语 / 编程 / 数学 / 美术）。
+//  课程类型枚举，5 种预置（出海营销 / 龙虾配置 / Claude Code / AI 增长 / SwiftUI 进阶）。
 //  每种课程附带：
 //    - 显示名（中文）
 //    - 课程色（从 Assets.xcassets 读 ColorSet）
 //    - SF Symbol 图标（作为学员头像 fallback）
 //    - 模板词典（WeeklyReportEngine 用来拼 AI 段落）
 //
+//  注：case raw value 保留 piano / english / coding / math / art，纯内部代号，
+//  Engine 与 MockSeed 的 switch 引用无需调整；observers 看到的全是新 displayName。
+//
 
 import SwiftUI
 
 enum CourseType: String, Codable, CaseIterable {
-    case piano
-    case english
-    case coding
-    case math
-    case art
+    case piano       // 出海营销
+    case english     // 龙虾配置（AI 推理硬件）
+    case coding      // Claude Code
+    case math        // AI 增长
+    case art         // SwiftUI 进阶
 
     // MARK: - 显示名
 
     var displayName: String {
         switch self {
-        case .piano:   "钢琴"
-        case .english: "英语"
-        case .coding:  "编程"
-        case .math:    "数学"
-        case .art:     "美术"
+        case .piano:   "出海营销"
+        case .english: "龙虾配置"
+        case .coding:  "Claude Code"
+        case .math:    "AI 增长"
+        case .art:     "SwiftUI 进阶"
         }
     }
 
@@ -47,11 +50,11 @@ enum CourseType: String, Codable, CaseIterable {
 
     var iconName: String {
         switch self {
-        case .piano:   "music.note"
-        case .english: "book.fill"
-        case .coding:  "chevron.left.forwardslash.chevron.right"
-        case .math:    "function"
-        case .art:     "paintbrush.fill"
+        case .piano:   "globe.americas.fill"
+        case .english: "cpu.fill"
+        case .coding:  "terminal.fill"
+        case .math:    "chart.line.uptrend.xyaxis"
+        case .art:     "swift"
         }
     }
 
@@ -62,58 +65,58 @@ enum CourseType: String, Codable, CaseIterable {
         switch self {
         case .piano:
             return [
-                "拜厄第 18 条",
-                "哈农音阶练习",
-                "C 大调和弦衔接",
-                "右手力度控制",
-                "三连音节奏",
-                "踏板配合",
-                "断奏与连奏切换",
-                "G 大调音阶"
+                "TikTok Shop 短视频脚本",
+                "Meta Ads CBO 出价测试",
+                "红人 affiliate 谈合作",
+                "Amazon Listing A+ 优化",
+                "Shopify Subscriptions 配置",
+                "像素回传调试",
+                "DTC 落地页转化优化",
+                "GMV 单量爬坡复盘"
             ]
         case .english:
             return [
-                "现在完成时句型",
-                "日常口语对话",
-                "高频单词 50 个",
-                "时态混淆纠错",
-                "课本 Unit 4 听力",
-                "短文复述",
-                "动词不规则变化",
-                "阅读理解长难句"
+                "双 4090 NVLink 跑通",
+                "70B Q4 量化对比 INT8",
+                "vLLM PagedAttention 调参",
+                "Flash Attention 2 编译",
+                "Llama.cpp KV cache 调优",
+                "Ollama 多模型并发",
+                "MLX Swift M3 Ultra 本地推理",
+                "TGI 部署压测"
             ]
         case .coding:
             return [
-                "for 循环嵌套",
-                "if-else 条件分支",
-                "函数定义与调用",
-                "变量作用域",
-                "list 增删改查",
-                "调试 print 排错",
-                "字符串拼接",
-                "import 模块使用"
+                "PreToolUse Hook 阻断脚本",
+                "Subagent 并行任务调度",
+                "Skills 触发条件设计",
+                "MCP Server 自定义工具",
+                "TaskCreate 拆分长任务",
+                "CLAUDE.md 项目记忆维护",
+                "Slash Command 自定义",
+                "Plan Mode 工作流"
             ]
         case .math:
             return [
-                "一元二次方程",
-                "勾股定理证明",
-                "应用题理解",
-                "几何图形辅助线",
-                "因式分解",
-                "函数图像分析",
-                "概率基础",
-                "数列求和"
+                "Aha Moment 漏斗拆解",
+                "Cohort Retention 周表",
+                "病毒系数 K 值测算",
+                "LP → Signup 转化优化",
+                "Activation 关键事件设计",
+                "Referral 病毒裂变设计",
+                "Onboarding 流失点分析",
+                "PMF 信号识别"
             ]
         case .art:
             return [
-                "素描线条流畅度",
-                "色彩冷暖对比",
-                "构图重心",
-                "光影明暗关系",
-                "速写人体比例",
-                "水彩湿画法",
-                "静物写生",
-                "几何体块面分析"
+                "Layout 协议自定义",
+                "matchedGeometryEffect 动画",
+                "Observable + iOS 17 数据流",
+                "Concurrency + MainActor 隔离",
+                "SwiftData @Model 关系建模",
+                "PhaseAnimator 多阶段动画",
+                "Charts 自定义 ChartContent",
+                "Liquid Glass 材质实践"
             ]
         }
     }
@@ -123,28 +126,28 @@ enum CourseType: String, Codable, CaseIterable {
         switch self {
         case .piano:
             return (
-                positive: ["节奏稳", "音色干净", "记谱准确", "练习专注"],
-                improvement: ["指法偶有卡顿", "强弱处理待加强", "踏板使用偏多", "和弦衔接生"]
+                positive: ["素材产能稳定", "ROAS 表现亮眼", "选品节奏成熟", "竞品分析深入"],
+                improvement: ["LP 转化率偏低", "TikTok 算法理解需深入", "复购漏斗待打通", "供应链备货偏保守"]
             )
         case .english:
             return (
-                positive: ["口语流利", "发音清晰", "单词量增加", "对话反应快"],
-                improvement: ["时态偶尔混淆", "听力细节漏听", "语法句型不够丰富", "书写笔画粗糙"]
+                positive: ["显存测算精确", "量化方案选型合理", "推理速度对标 SOTA", "硬件预算控制好"],
+                improvement: ["散热方案待优化", "电源冗余偏紧", "驱动兼容性踩坑", "PCIe 通道数没榨干"]
             )
         case .coding:
             return (
-                positive: ["逻辑清晰", "排错耐心", "代码注释完整", "课堂提问积极"],
-                improvement: ["边界条件容易漏", "调试节奏偏慢", "函数命名待规范", "缩进格式偶尔混乱"]
+                positive: ["hooks 思路清晰", "subagent prompt 自洽", "上下文管理精细", "记忆系统组织规范"],
+                improvement: ["MCP 工具拆分过细", "Skills 触发条件太宽", "agent 协作链路不顺", "Plan 阶段铺得太大"]
             )
         case .math:
             return (
-                positive: ["运算扎实", "证明步骤完整", "审题仔细", "速度稳定"],
-                improvement: ["应用题理解偏慢", "几何辅助线难发现", "粗心看错符号", "公式套用机械"]
+                positive: ["北极星指标定义清晰", "归因模型搭得稳", "实验节奏稳定", "用户访谈结论扎实"],
+                improvement: ["假设验证偏慢", "实验样本量不够大", "数据看板维度太杂", "PMF 信号判断偏主观"]
             )
         case .art:
             return (
-                positive: ["想象力丰富", "色彩搭配大胆", "线条流畅", "课堂专注"],
-                improvement: ["构图重心偏左", "光影对比偏弱", "细节刻画偏少", "落笔犹豫"]
+                positive: ["视图结构清晰", "动画细腻自然", "状态隔离干净", "性能优化敏感"],
+                improvement: ["MainActor 边界把握偏紧", "重绘开销待优化", "Layout 嵌套层级偏深", "依赖注入方式偏老派"]
             )
         }
     }

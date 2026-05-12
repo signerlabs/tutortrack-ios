@@ -61,9 +61,9 @@ struct AddStudentSheet: View {
                     Text("课时")
                 }
 
-                // MARK: - 家长 & 备注
+                // MARK: - 联系方式 & 备注
                 Section {
-                    TextField("家长联系方式（可选）", text: $parentContact)
+                    TextField("联系方式（X / 微信 / 邮箱，可选）", text: $parentContact)
                     TextField("备注（可选）", text: $notes, axis: .vertical)
                         .lineLimit(2...4)
                 } header: {

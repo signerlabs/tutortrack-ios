@@ -80,7 +80,7 @@ struct WeeklyReportPDFView: View {
     private var hero: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("家长周报")
+                Text("学员周报")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(courseColor)
                 Text(report.studentName)

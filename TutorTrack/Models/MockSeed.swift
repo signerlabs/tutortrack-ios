@@ -46,39 +46,39 @@ enum MockSeed {
     private static func makeMockStudents() -> [Student] {
         [
             Student(
-                name: "小明",
+                name: "Alex",
                 courseType: .piano,
                 totalLessons: 30,
-                parentContact: "138****8801（妈妈）",
-                notes: "喜欢古典曲目，对节奏更敏感；爸妈希望明年参加业余 5 级考试。"
+                parentContact: "@alex_tiktok · WeChat: AlexDTC",
+                notes: "TikTok Shop 美区跑量阶段，目标单日 GMV 5 万美金；当前卡在素材产能与 CBO 出价节奏。"
             ),
             Student(
-                name: "小红",
+                name: "Mark",
                 courseType: .english,
                 totalLessons: 24,
-                parentContact: "139****2103（妈妈）",
-                notes: "口语很自信，时态偶尔混乱；家长重点关注书面写作训练。"
+                parentContact: "Telegram: @mark_rig · mark@local-ai.dev",
+                notes: "准备组双 4090 工作站本地跑 70B Q4 量化；纠结 vLLM vs SGLang，关注 PagedAttention 调参。"
             ),
             Student(
-                name: "小李",
+                name: "思源",
                 courseType: .coding,
                 totalLessons: 20,
-                parentContact: "135****6677（爸爸）",
-                notes: "对 Scratch 很感兴趣，准备过渡到 Python；逻辑思维不错，调试耐心待提升。"
+                parentContact: "X / GitHub: @siyuan-builds",
+                notes: "想把日常 dev workflow 全部 agent 化；hooks 已上手，subagent 调度不熟，想自己造 MCP 工具。"
             ),
             Student(
-                name: "小张",
+                name: "老陈",
                 courseType: .math,
                 totalLessons: 16,
-                parentContact: "137****9012（妈妈）",
-                notes: "运算扎实但应用题理解偏慢；家长希望主攻应用题与几何证明。"
+                parentContact: "微信：chenchen-growth · 小红书：老陈的 SaaS 笔记",
+                notes: "DTC 品牌增长 op，目标做出 1 万付费用户的 SaaS；当前 LP→Signup 转化 8%，想冲到 15%+。"
             ),
             Student(
-                name: "小王",
+                name: "灰灰",
                 courseType: .art,
                 totalLessons: 12,
-                parentContact: "186****3456（爸爸）",
-                notes: "想象力出色，构图大胆；偶尔细节刻画不足。家长希望保持兴趣为主。"
+                parentContact: "X: @grey_swiftui · 小红书：灰灰玩 iOS",
+                notes: "iOS 7 年经验，正上手 iOS 26 新特性（Liquid Glass / Foundation Models）；当前在做独立 App。"
             )
         ]
     }
@@ -131,9 +131,9 @@ enum MockSeed {
                         .prefix(2)
                     return parts.joined(separator: "，")
                 case .absent:
-                    return ["家中临时有事", "身体不适", "学校加课冲突"].randomElement(using: &generator) ?? ""
+                    return ["临时项目冲突", "身体不适未到", "客户突发会议"].randomElement(using: &generator) ?? ""
                 case .excused:
-                    return ["家长提前请假", "节假日出行", "学校文艺活动"].randomElement(using: &generator) ?? ""
+                    return ["提前申请请假", "出差/差旅安排", "线下活动冲突"].randomElement(using: &generator) ?? ""
                 }
             }()
 

@@ -166,7 +166,7 @@ enum WeeklyReportEngine {
             attendanceSentence = "本周共上课 \(attendedDays) 次\(absentCount > 0 ? "，另有 \(absentCount) 次缺勤" : "")。"
         } else {
             // 兜底：本周无出勤
-            return "本周 **\(studentName)** 没有上课记录\(excusedCount > 0 ? "（请假 \(excusedCount) 次）" : "")，建议尽快与家长沟通排课，恢复练习节奏。"
+            return "本周 **\(studentName)** 没有上课记录\(excusedCount > 0 ? "（请假 \(excusedCount) 次）" : "")，建议主动同步当前进度，尽快约下一次课。"
         }
 
         // 练习要点串联
@@ -179,7 +179,7 @@ enum WeeklyReportEngine {
         } else if !practicedTopics.isEmpty {
             practiceSentence = "围绕 **\(topic)** 进行了集中练习，"
         } else {
-            practiceSentence = "围绕课本进度持续推进，"
+            practiceSentence = "围绕本周既定计划稳步推进，"
         }
 
         // 评价句
@@ -187,38 +187,38 @@ enum WeeklyReportEngine {
         let impPart = improvement.first ?? "细节需打磨"
         let evalSentence = "整体表现\(posPart)，下一阶段建议关注 \(impPart)。"
 
-        // 家长建议
+        // 下一阶段建议（适配 vibe coding 圈层语境）
         let suggestionPool: [String]
         switch courseType {
-        case .piano:
+        case .piano:        // 出海营销
             suggestionPool = [
-                "建议家长在家督促每日 20 分钟练习。",
-                "周末可让孩子完整弹一遍上周曲目巩固记忆。",
-                "节拍器配合慢练，避免赶速度。"
+                "建议下周复盘 3 条 TopGMV 素材，提炼可复制的 hook 公式。",
+                "可跑一组 ABO vs CBO 小预算测试，验证当前出价假设。",
+                "提醒：素材产能优先级 > 投放策略，先把脚本流水线稳住。"
             ]
-        case .english:
+        case .english:      // 龙虾配置
             suggestionPool = [
-                "建议家长每天陪读 10 分钟课本对话。",
-                "可让孩子用本周新词造句巩固记忆。",
-                "鼓励孩子尝试自主复述一段听力内容。"
+                "建议下周对比 vLLM 与 SGLang 同模型推理速度，出一份测评。",
+                "提醒：散热与电源冗余先解决，再追极致 token/s。",
+                "可尝试 INT4 与 INT8 量化对照，记录显存占用与精度损失。"
             ]
-        case .coding:
+        case .coding:       // Claude Code
             suggestionPool = [
-                "建议家长鼓励孩子周末完成一个小练习，巩固本周知识点。",
-                "可让孩子讲解一段代码给家长，强化逻辑表达。",
-                "出错时引导先看 print 输出，养成调试习惯。"
+                "建议下周选 1 个真实工作流封装成 Skill 或 Subagent。",
+                "提醒：Plan 阶段控制在 5 步以内，超过就拆 Subagent 避免上下文爆炸。",
+                "可给 hooks 加日志，复盘哪些规则生效频次最高。"
             ]
-        case .math:
+        case .math:         // AI 增长
             suggestionPool = [
-                "建议家长每周陪做 3 道应用题，重在思路而非速度。",
-                "错题本及时整理，每周回看一次。",
-                "鼓励孩子先画图理解题意再动笔。"
+                "建议本周设计 1 个 LP A/B 实验，目标 Signup +20%。",
+                "提醒：Cohort Retention 要看 D1/D7/D30 三条线，单点容易误判。",
+                "可访谈 3 位流失用户，找出 Onboarding 真正卡点。"
             ]
-        case .art:
+        case .art:          // SwiftUI 进阶
             suggestionPool = [
-                "建议家长保持鼓励，不强求成品好坏。",
-                "周末可一起观察生活中的色彩与光影。",
-                "提供安静舒适的画画环境胜过技巧督促。"
+                "建议下周用自定义 Layout 实现一个流式标签布局。",
+                "提醒：MainActor 别滥用，IO 密集型放后台 actor 更顺。",
+                "可把 PhaseAnimator 多阶段动画拆解录屏，作为作品集素材。"
             ]
         }
         let suggestion = pick(from: suggestionPool, count: 1, using: &rng).first ?? ""

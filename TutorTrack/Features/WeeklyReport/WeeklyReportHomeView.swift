@@ -248,7 +248,7 @@ struct WeeklyReportHomeView: View {
                 ) {
                     HStack(spacing: 8) {
                         Image(systemName: "square.and.arrow.up.fill")
-                        Text("分享 PDF 给家长")
+                        Text("分享周报 PDF")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -318,7 +318,7 @@ struct WeeklyReportHomeView: View {
             let url = try SWExportShare.renderSinglePagePDF(
                 view: WeeklyReportPDFView(report: report),
                 fileName: fileName,
-                title: "\(report.studentName) 家长周报 \(report.weekRange)",
+                title: "\(report.studentName) 学员周报 \(report.weekRange)",
                 author: "TutorTrack"
             )
             pdfURL = url
@@ -342,7 +342,7 @@ private struct WeeklyReportPreviewCard: View {
             // 头部
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("家长周报")
+                    Text("学员周报")
                         .font(.caption)
                         .foregroundStyle(courseColor)
                     Text(report.studentName)
