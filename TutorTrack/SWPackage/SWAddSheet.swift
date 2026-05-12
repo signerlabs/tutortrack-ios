@@ -2,7 +2,7 @@
 //  SWAddSheet.swift
 //  TutorTrack — ShipSwift Recipe: component-add-sheet
 //
-//  Bottom sheet（.medium detent），含多行 TextField + Cancel/Continue 按钮。
+//  Bottom sheet (.medium detent) with a multi-line TextField + Cancel / Continue buttons.
 //
 
 import SwiftUI

@@ -2,7 +2,8 @@
 //  SWThinkingIndicator.swift
 //  TutorTrack — ShipSwift Recipe: component-thinking-indicator
 //
-//  三点弹跳"AI 思考中"指示器。本 demo 在 WeeklyReportHomeView 生成周报时配合 SWPageLoadingView 使用。
+//  Three-dot bouncing "AI is thinking" indicator. Used in WeeklyReportHomeView
+//  alongside SWPageLoadingView during weekly report generation.
 //
 
 import SwiftUI

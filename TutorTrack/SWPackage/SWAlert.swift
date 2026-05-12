@@ -2,8 +2,9 @@
 //  SWAlert.swift
 //  TutorTrack — ShipSwift Recipe: component-alert
 //
-//  全局 toast 风格 alert，4 种语义预设（info / success / warning / error）+ 自定义样式 + 自动消失。
-//  通过 `.swAlert()` modifier 挂在 App 根视图，使用 `SWAlertManager.shared.show(...)` 调起。
+//  Global toast-style alert. Four semantic presets (info / success / warning /
+//  error) plus a custom style, all with auto-dismiss. Attach `.swAlert()` to
+//  the app's root view, then call `SWAlertManager.shared.show(...)` to fire one.
 //
 
 import SwiftUI

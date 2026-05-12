@@ -2,8 +2,8 @@
 //  SWStepper.swift
 //  TutorTrack — ShipSwift Recipe: component-stepper
 //
-//  Compact 数字 stepper：chevron ± 按钮、numericText 动画、haptic 反馈。
-//  quantity ≤ 0 时 decrement 自动 disabled。
+//  Compact numeric stepper: chevron +/- buttons, numericText animation,
+//  haptic feedback. The decrement button auto-disables when quantity <= 0.
 //
 
 import SwiftUI

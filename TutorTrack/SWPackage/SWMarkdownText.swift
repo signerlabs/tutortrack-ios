@@ -2,8 +2,10 @@
 //  SWMarkdownText.swift
 //  TutorTrack — ShipSwift Recipe: component-markdown-text
 //
-//  轻量 Markdown 渲染器，支持标题 / fenced 代码块 / 列表 / 分割线 / 行内格式（粗体/斜体/inline code）。
-//  本 demo 用来渲染 WeeklyReportEngine 生成的 AI 周报段落，让它看起来像 LLM 输出。
+//  Lightweight Markdown renderer. Supports headings / fenced code blocks /
+//  lists / dividers / inline formatting (bold / italic / inline code). Used
+//  here to render the AI weekly report paragraph produced by
+//  WeeklyReportEngine so it reads like LLM output.
 //
 
 import SwiftUI

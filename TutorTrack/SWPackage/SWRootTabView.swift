@@ -2,7 +2,8 @@
 //  SWRootTabView.swift
 //  TutorTrack — ShipSwift Recipe: component-root-tab-view
 //
-//  Root TabView 模板（iOS 18+ Tab API）。本 demo 派生为 RootTabView（见 App/RootTabView.swift）。
+//  Root TabView template (iOS 18+ Tab API). This demo derives its own
+//  RootTabView from it (see App/RootTabView.swift).
 //
 
 import SwiftUI

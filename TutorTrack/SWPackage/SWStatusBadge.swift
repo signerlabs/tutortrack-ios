@@ -2,9 +2,11 @@
 //  SWStatusBadge.swift
 //  TutorTrack — ShipSwift Recipe: component-status-badge
 //
-//  胶囊状态徽章，5 种语义预设（info / success / warning / error / neutral）。
-//  本 demo 用 5 种课程色（钢琴粉 / 英语蓝 / 编程紫 / 数学橙 / 美术绿）作为另一套自定义 tint，
-//  通过 CourseType.badge(view) 包一层 capsule 实现，本组件保留原版语义预设不动。
+//  Capsule status badge with 5 semantic presets (info / success / warning /
+//  error / neutral). This demo also uses 5 course colors as a custom tint set
+//  (pink / blue / purple / orange / green); those are applied separately via
+//  a capsule wrapper around CourseType, leaving the recipe's semantic presets
+//  untouched.
 //
 
 import SwiftUI

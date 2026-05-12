@@ -2,8 +2,9 @@
 //  SWGradientDivider.swift
 //  TutorTrack — ShipSwift Recipe: component-gradient-divider
 //
-//  水平分割线，中间渐显（clear → color → clear）。本 demo 用于周报 PDF 内排版，
-//  按课程色绘细线，让 PDF 不再是死板等高线条。
+//  Horizontal divider with a centered gradient (clear -> color -> clear).
+//  Used in the weekly report PDF layout: a thin course-colored stroke keeps
+//  the PDF from looking like a slab of flat rules.
 //
 
 import SwiftUI

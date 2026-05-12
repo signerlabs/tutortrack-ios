@@ -2,17 +2,20 @@
 //  WeeklyReportHomeView.swift
 //  TutorTrack
 //
-//  「周报」Tab 主页（**录屏 hero 画面**）。
+//  Weekly report tab home (**the hero screen for the demo video**).
 //
-//  交互流：
-//  1. 顶部横滚 chips 选学员
-//  2. 切换"本周 / 上周"
-//  3. 点「生成周报」按钮 → SWPageLoadingView 全屏遮罩 + SWThinkingIndicator
-//     - Task.sleep(.seconds(1.5))（演示用，制造 AI 感；实际本地计算 < 5ms）
-//  4. 生成后展示 WeeklyReportPreviewCard
-//  5. 底部「导出 PDF 分享」按钮：
-//     - 调 SWExportShare.renderSinglePagePDF 把 WeeklyReportPDFView 渲成 A4 PDF
-//     - ShareLink 弹系统 ShareSheet（可分享给家长微信 / 邮件 / 打印）
+//  Interaction flow:
+//  1. Horizontal student chips at the top
+//  2. Toggle between "This Week" and "Last Week"
+//  3. Tap "Generate Weekly Report" -> full-screen SWPageLoadingView overlay
+//     + SWThinkingIndicator
+//     - Task.sleep(.seconds(1.5)) sells the "AI is thinking" feel; actual
+//       local computation is < 5ms.
+//  4. Render WeeklyReportPreviewCard after generation.
+//  5. The bottom "Export & Share PDF" button:
+//     - Calls SWExportShare.renderSinglePagePDF to rasterize WeeklyReportPDFView
+//       into a single A4 page.
+//     - ShareLink opens the system share sheet (WeChat / email / print).
 //
 
 import SwiftUI
@@ -21,15 +24,15 @@ import SwiftData
 struct WeeklyReportHomeView: View {
     @Query(sort: \Student.createdAt, order: .reverse) private var allStudents: [Student]
 
-    /// 当前选中学员
+    /// Currently selected student
     @State private var focusedStudentID: UUID?
-    /// 本周 / 上周
+    /// This week / last week
     @State private var weekOffset: WeekOffset = .thisWeek
-    /// 已生成的报告（nil = 未生成或重选了）
+    /// Already-generated report (nil = not generated yet or inputs changed)
     @State private var currentReport: WeeklyReport?
-    /// 已生成的 PDF URL（生成 PDF 后才有）
+    /// Generated PDF URL (only set after PDF export)
     @State private var pdfURL: URL?
-    /// 正在生成中？
+    /// Currently generating?
     @State private var isGenerating: Bool = false
 
     enum WeekOffset: String, CaseIterable, Identifiable {
@@ -58,18 +61,19 @@ struct WeeklyReportHomeView: View {
                     emptyState
                         .padding(.top, 80)
                 } else {
-                    // 顶部：学员 chips
+                    // Top: student chips
                     studentChips
 
-                    // 周次切换
+                    // Week toggle
                     weekToggle
                         .padding(.horizontal)
 
-                    // 生成按钮（已生成过则隐藏；点击"重新生成"会回到这个按钮）
+                    // Generate button (hidden once generated; "Regenerate" brings it back)
                     if currentReport == nil {
                         if isGenerating {
-                            // 生成中：原位置展示 SWThinkingIndicator + 提示文字
-                            // （SWPageLoadingView 同时全屏覆盖，二者协同"AI 思考"语义）
+                            // Generating: show SWThinkingIndicator + caption in
+                            // the same slot. SWPageLoadingView is overlaid on
+                            // top — together they sell the "AI thinking" feel.
                             thinkingPlaceholder
                                 .padding(.horizontal)
                                 .padding(.top, 8)
@@ -79,11 +83,11 @@ struct WeeklyReportHomeView: View {
                                 .padding(.top, 8)
                         }
                     } else if let report = currentReport {
-                        // 报告预览
+                        // Report preview
                         WeeklyReportPreviewCard(report: report)
                             .padding(.horizontal)
 
-                        // 底部操作区
+                        // Bottom action area
                         actionButtons(for: report)
                             .padding(.horizontal)
                             .padding(.top, 4)
@@ -94,18 +98,18 @@ struct WeeklyReportHomeView: View {
         }
         .background(Color("WarmIvory").ignoresSafeArea())
         .navigationTitle("AI 周报")
-        .swPageLoading(.weeklyReport)  // 全屏 loading 遮罩
+        .swPageLoading(.weeklyReport)  // Full-screen loading overlay
         .onAppear {
             if focusedStudentID == nil {
                 focusedStudentID = allStudents.first?.id
             }
         }
-        // 任意输入变化都失效当前预览，强制用户重新点"生成"
+        // Any input change invalidates the current preview, forcing the user to regenerate.
         .onChange(of: focusedStudentID) { _, _ in resetReport() }
         .onChange(of: weekOffset) { _, _ in resetReport() }
     }
 
-    // MARK: - 子视图
+    // MARK: - Subviews
 
     private var studentChips: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -161,7 +165,7 @@ struct WeeklyReportHomeView: View {
         }
     }
 
-    /// 生成中占位卡（SWThinkingIndicator Recipe: component-thinking-indicator）
+    /// Placeholder card while generating (SWThinkingIndicator Recipe: component-thinking-indicator)
     private var thinkingPlaceholder: some View {
         VStack(spacing: 14) {
             HStack(spacing: 8) {
@@ -215,7 +219,7 @@ struct WeeklyReportHomeView: View {
 
     private func actionButtons(for report: WeeklyReport) -> some View {
         VStack(spacing: 10) {
-            // 第一行：重新生成 + 导出 PDF
+            // Row 1: regenerate + export PDF
             HStack(spacing: 10) {
                 Button {
                     resetReport()
@@ -240,7 +244,7 @@ struct WeeklyReportHomeView: View {
                 .tint(report.courseType.color)
             }
 
-            // 第二行：PDF 生成完成后展示分享 link
+            // Row 2: once the PDF is generated, surface the share link
             if let pdfURL {
                 ShareLink(
                     item: pdfURL,
@@ -278,15 +282,16 @@ struct WeeklyReportHomeView: View {
         .padding(.horizontal, 30)
     }
 
-    // MARK: - 操作
+    // MARK: - Actions
 
     private func resetReport() {
         currentReport = nil
         pdfURL = nil
     }
 
-    /// 生成周报：演示用 1.5s sleep 制造"AI 感"
-    /// 实际 Engine.generate 是纯本地计算，耗时 < 5ms
+    /// Generate the weekly report. The demo sleeps for 1.5s to sell the
+    /// "AI is working" feel; the real Engine.generate is pure local
+    /// computation that takes < 5ms.
     private func generate() {
         guard let student = focusedStudent else { return }
         guard !isGenerating else { return }
@@ -299,19 +304,20 @@ struct WeeklyReportHomeView: View {
         )
 
         Task { @MainActor in
-            // 演示用 sleep，让 LoadingView + ThinkingIndicator 露脸
-            // 实际 generate() 是同步函数，耗时 < 5ms（deterministic LCG + 字符串拼接）
+            // Demo-only sleep so LoadingView + ThinkingIndicator are visible.
+            // The real generate() is synchronous and finishes in < 5ms
+            // (deterministic LCG + string composition).
             try? await Task.sleep(for: .seconds(1.5))
 
             let report = WeeklyReportEngine.generate(for: student, weekOf: weekOffset.dateAnchor)
             currentReport = report
-            pdfURL = nil  // 重置 PDF
+            pdfURL = nil  // Reset the PDF
             isGenerating = false
             SWLoadingManager.shared.hide(page: .weeklyReport)
         }
     }
 
-    /// 导出 PDF（ImageRenderer + PDFKit，零网络）
+    /// Export the PDF (ImageRenderer + PDFKit, zero network)
     private func exportPDF(for report: WeeklyReport) {
         let fileName = "\(report.studentName)-周报-\(report.weekRange.replacingOccurrences(of: " ", with: ""))"
         do {
@@ -329,9 +335,10 @@ struct WeeklyReportHomeView: View {
     }
 }
 
-// MARK: - 报告预览卡
+// MARK: - Report preview card
 
-/// 在屏上显示的报告预览（与 PDF 排版有差异：屏幕更紧凑、用 systemBackground 卡片）
+/// On-screen report preview (different from the PDF layout — tighter, and
+/// rendered onto a systemBackground card).
 private struct WeeklyReportPreviewCard: View {
     let report: WeeklyReport
 
@@ -339,7 +346,7 @@ private struct WeeklyReportPreviewCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            // 头部
+            // Header
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("学员周报")
@@ -374,14 +381,14 @@ private struct WeeklyReportPreviewCard: View {
 
             SWGradientDivider(color: courseColor, opacity: 0.5)
 
-            // 出勤汇总 KPI
+            // Attendance KPI row
             HStack(spacing: 10) {
                 kpiBlock(value: report.attendedDays, label: "出勤", color: .green)
                 kpiBlock(value: report.absentCount, label: "缺勤", color: .red)
                 kpiBlock(value: report.excusedCount, label: "请假", color: .gray)
             }
 
-            // 练习要点
+            // Practice highlights
             VStack(alignment: .leading, spacing: 8) {
                 Label("本周练习要点", systemImage: "checklist")
                     .font(.subheadline)
@@ -398,7 +405,7 @@ private struct WeeklyReportPreviewCard: View {
                 }
             }
 
-            // AI 段落
+            // AI paragraph
             VStack(alignment: .leading, spacing: 8) {
                 Label("AI 周度总结", systemImage: "sparkles")
                     .font(.subheadline)

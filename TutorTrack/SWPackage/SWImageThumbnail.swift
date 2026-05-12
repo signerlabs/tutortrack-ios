@@ -2,9 +2,10 @@
 //  SWImageThumbnail.swift
 //  TutorTrack — ShipSwift Recipe: component-image-thumbnail
 //
-//  圆角方形缩略图，自动 fallback 同名 ColorSet 作为底色。
-//  本 demo 中学员头像没有真实图片，仅 ColorSet 命中即可显示纯色背景，
-//  上层再叠 SF Symbol 即可（见 StudentCard.swift）。
+//  Rounded-square thumbnail with a same-name ColorSet as the automatic
+//  background fallback. Student avatars in this demo have no real image — the
+//  ColorSet match alone provides the solid background, with the SF Symbol
+//  layered on top (see StudentCard.swift).
 //
 
 import SwiftUI

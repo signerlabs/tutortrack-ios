@@ -2,8 +2,9 @@
 //  SWLoading.swift
 //  TutorTrack — ShipSwift Recipe: component-loading (Page Loading Overlay)
 //
-//  整页全屏 loading 遮罩（.ultraThinMaterial 背景 + 图标 pulse 动画 + 进度条）。
-//  本 demo 用于周报生成时的 1.5 秒"AI 思考"全屏遮罩。
+//  Full-screen page-loading overlay (.ultraThinMaterial background + pulsing
+//  icon animation + progress bar). Used as the 1.5-second "AI is thinking"
+//  overlay while the weekly report is being generated.
 //
 
 import SwiftUI
@@ -18,7 +19,7 @@ struct SWPageLoadingState {
 
 // MARK: - Page Identifier
 
-/// 本 demo 注册的 loading 页：周报生成页
+/// Loading pages registered in this demo: just the weekly-report page
 enum SWLoadingPage: String {
     case weeklyReport
 }

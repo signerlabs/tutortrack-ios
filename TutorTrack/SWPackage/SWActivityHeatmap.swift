@@ -2,14 +2,16 @@
 //  SWActivityHeatmap.swift
 //  TutorTrack — ShipSwift Recipe: chart-activity-heatmap
 //
-//  GitHub 风格活动热力图 + 连续打卡追踪。三个子组件：
-//    - StreakCard    渐变背景连续打卡卡片
-//    - HeatmapGrid   FlowLayout 热力图网格
-//    - HeatmapLegend Less/More 色阶图例
-//  另暴露 static calculateStreak(from:) 和 StreakInfo 模型。
+//  GitHub-style activity heatmap + streak tracking. Three subviews:
+//    - StreakCard    Gradient-background streak card
+//    - HeatmapGrid   FlowLayout heatmap grid
+//    - HeatmapLegend Less / More color-scale legend
+//  Also exposes static calculateStreak(from:) and the StreakInfo model.
 //
-//  本 demo 在出勤 Tab 用 HeatmapGrid（每位学员一行，过去 14 天）
-//  + 自建三色映射（present=绿 / absent=红 / excused=灰，绕过原版的 count→opacity 单色映射）。
+//  This demo uses HeatmapGrid on the Attendance tab (one row per student,
+//  past 14 days) plus a custom three-color mapping (present = green,
+//  absent = red, excused = gray), bypassing the recipe's default
+//  count -> opacity single-color mapping.
 //
 
 import SwiftUI

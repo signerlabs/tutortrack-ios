@@ -1,12 +1,14 @@
 //
 //  SWExportShare.swift
-//  TutorTrack — 本地实现（替代 Pro Recipe: export-share，Pro Key 未解锁）
+//  TutorTrack — local implementation (substitutes the Pro Recipe `export-share`
+//  when the Pro key is not unlocked).
 //
-//  极简 PDF 导出：SwiftUI View → ImageRenderer → PDFKit → 写入临时文件 → 返回 URL 喂给 ShareLink。
-//  - 单页（A4 595 × 842 pt）
-//  - 自动注入 PDF metadata（Title / Author / Creator）
-//  - 文件命名带学员名 + 周次，避免覆盖
-//  - 零依赖（纯 SwiftUI ImageRenderer + PDFKit）
+//  Minimal PDF export: SwiftUI View -> ImageRenderer -> PDFKit -> temp file ->
+//  return URL for ShareLink.
+//  - Single page (A4 595 x 842 pt)
+//  - Auto-injects PDF metadata (Title / Author / Creator)
+//  - File name embeds the student's name + week so files do not collide
+//  - Zero dependencies (pure SwiftUI ImageRenderer + PDFKit)
 //
 
 import SwiftUI
@@ -16,12 +18,12 @@ import UniformTypeIdentifiers
 @MainActor
 enum SWExportShare {
 
-    // MARK: - A4 尺寸（points）
+    // MARK: - A4 size (points)
 
-    /// A4 纸尺寸（72 dpi 下 1 inch = 72 pt，A4 = 8.27 × 11.69 inch ≈ 595.2 × 841.8 pt）
+    /// A4 page size (at 72 dpi: 1 inch = 72 pt; A4 = 8.27 x 11.69 inch ≈ 595.2 x 841.8 pt)
     static let a4Size = CGSize(width: 595, height: 842)
 
-    // MARK: - 错误
+    // MARK: - Errors
 
     enum ExportError: Error, LocalizedError {
         case renderFailed
@@ -37,22 +39,23 @@ enum SWExportShare {
         }
     }
 
-    // MARK: - 入口：SwiftUI View → 临时 PDF 文件 URL
+    // MARK: - Entry: SwiftUI View -> temp PDF file URL
 
-    /// 将任意 SwiftUI View 渲染成单页 PDF，写入临时目录并返回 URL。
+    /// Render any SwiftUI View as a single-page PDF, write it to a temp file,
+    /// and return its URL.
     /// - Parameters:
-    ///   - view: 要渲染的 SwiftUI View（建议外层包 frame(width: 595, height: 842)）
-    ///   - fileName: 文件名（无后缀，函数自动加 .pdf）
+    ///   - view: the SwiftUI View to render (wrap with frame(width: 595, height: 842))
+    ///   - fileName: file name (no extension; the function appends .pdf)
     ///   - title: PDF metadata Title
     ///   - author: PDF metadata Author
-    /// - Returns: 临时目录下的 PDF 文件 URL，供 ShareLink 使用
+    /// - Returns: a temp-directory PDF file URL ready for ShareLink
     static func renderSinglePagePDF<V: View>(
         view: V,
         fileName: String,
         title: String = "TutorTrack Report",
         author: String = "TutorTrack"
     ) throws -> URL {
-        // 1. 用 ImageRenderer 拿到一个能写 CGContext 的渲染器
+        // 1. Use ImageRenderer to get a renderer that can drive a CGContext
         let renderer = ImageRenderer(content:
             view
                 .frame(width: a4Size.width, height: a4Size.height)
@@ -60,12 +63,12 @@ enum SWExportShare {
         )
         renderer.proposedSize = .init(a4Size)
 
-        // 2. 计算输出路径
+        // 2. Compute the output path
         let safeName = sanitizeFileName(fileName)
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(safeName).pdf")
 
-        // 3. 删旧文件
+        // 3. Remove any stale file
         try? FileManager.default.removeItem(at: url)
 
         // 4. PDF metadata
@@ -75,7 +78,7 @@ enum SWExportShare {
             kCGPDFContextCreator: "TutorTrack"
         ]
 
-        // 5. 写入
+        // 5. Write the PDF
         var success = false
         renderer.render { _, renderContext in
             var mediaBox = CGRect(origin: .zero, size: a4Size)
@@ -100,7 +103,7 @@ enum SWExportShare {
         return url
     }
 
-    // MARK: - 工具：安全文件名
+    // MARK: - Utility: safe file name
 
     private static func sanitizeFileName(_ raw: String) -> String {
         let invalid = CharacterSet(charactersIn: "/\\?%*|\"<>:")
@@ -108,10 +111,10 @@ enum SWExportShare {
     }
 }
 
-// MARK: - 给 ShareLink 用的 Transferable URL
+// MARK: - Transferable URL for ShareLink
 
-/// SwiftUI ShareLink 直接接受 URL，无需再封装 Transferable —— ShareLink(item: url) 即可。
-/// 此扩展只是为了文档化使用方式：
+/// SwiftUI's ShareLink accepts a URL directly — no Transferable wrapper needed;
+/// `ShareLink(item: url)` is enough. This block exists only to document usage:
 ///
 /// ```swift
 /// if let pdfURL {

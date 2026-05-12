@@ -2,7 +2,8 @@
 //  SWShimmer.swift
 //  TutorTrack — ShipSwift Recipe: animation-shimmer
 //
-//  Shimmer 高光扫光。本 demo 用于「生成周报」CTA 按钮，吸引用户点击演示核心画面。
+//  Shimmer highlight sweep. Attached to the "Generate Weekly Report" CTA to
+//  draw the eye toward the demo's hero screen.
 //
 
 import SwiftUI

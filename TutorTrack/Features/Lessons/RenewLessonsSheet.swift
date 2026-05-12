@@ -147,7 +147,7 @@ struct RenewLessonsSheet: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - 提交
+    // MARK: - Submit
 
     private func confirmRenew() {
         let added = addLessons

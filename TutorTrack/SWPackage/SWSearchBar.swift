@@ -2,8 +2,9 @@
 //  SWSearchBar.swift
 //  TutorTrack — ShipSwift Recipe: component-search-bar
 //
-//  胶囊形搜索栏，带 .ultraThinMaterial 磨砂背景 + 自动出现的 clear 按钮。
-//  外层不自动加 horizontal padding，调用方需 `.padding(.horizontal)`。
+//  Capsule-shaped search field with a .ultraThinMaterial frosted background
+//  and an auto-appearing clear button. It does not add horizontal padding
+//  itself — the caller must apply `.padding(.horizontal)`.
 //
 
 import SwiftUI

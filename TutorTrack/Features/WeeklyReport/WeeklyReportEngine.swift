@@ -2,85 +2,92 @@
 //  WeeklyReportEngine.swift
 //  TutorTrack
 //
-//  AI 周报生成引擎（纯本地 mock，零网络，deterministic）。
+//  AI weekly report generator (pure local mock, zero network, deterministic).
 //
-//  设计要点：
-//  1. **Deterministic**：同一学员同一周生成的报告完全一致。
+//  Design notes:
+//  1. **Deterministic**: the same student + same week always yields the same report.
 //     - seed = student.id.hashValue ^ date.weekIndex
-//     - 用自家 LCG（线性同余）实现 RandomNumberGenerator，绕开系统 RNG 的"不保证可重复"
-//  2. **数据驱动**：吃本周该学员的 AttendanceRecord，扫描 noteText 中的关键词（命中 practiceKeywords）
-//     - 命中关键词 → 直接挑出来作为 practicedTopics
-//     - 没命中 → fallback 到 practiceKeywords 里随机挑 2 个
-//  3. **AI 段落拼接**：80 字左右，按出勤天数选择正面/改进句模板，最后挂家长建议
-//  4. **看起来像 LLM**：返回的 aiParagraph 是 markdown 友好的中文段落，可直接喂 SWMarkdownText
+//     - Uses a custom LCG-based RandomNumberGenerator to bypass the system RNG,
+//       which does not guarantee reproducibility.
+//  2. **Data-driven**: ingests the student's AttendanceRecord set for the week
+//     and scans noteText for matches against practiceKeywords.
+//     - Hits go straight into practicedTopics.
+//     - If hits < 3, fall back to picking 2 from practiceKeywords at random.
+//  3. **AI paragraph composition**: roughly 80 chars; choose positive vs.
+//     improvement templates based on attendance days, then append a parent-facing
+//     suggestion.
+//  4. **Reads like an LLM**: returned aiParagraph is Markdown-friendly Chinese
+//     prose, ready to feed straight into SWMarkdownText.
 //
 
 import Foundation
-import SwiftData  // 虽然 Engine 只读 @Model 实例的属性，未直接用 SwiftData API；
-                  // 但 CLAUDE.md 强约束"用 SwiftData @Model 的文件顶部 import SwiftData"，
-                  // 防御性加上避免后续扩展（如本地缓存到 ModelContext）漏 import。
+import SwiftData  // The engine only reads @Model instance properties — it does
+                  // not call any SwiftData API. We still import it defensively
+                  // because the project rule is "any file using a SwiftData
+                  // @Model must import SwiftData at the top" (covers future
+                  // extensions like caching into ModelContext).
 
-// MARK: - 公开数据结构
+// MARK: - Public data structures
 
 struct WeeklyReport {
-    /// 学员姓名
+    /// Student name
     let studentName: String
-    /// 课程类型
+    /// Course type
     let courseType: CourseType
-    /// 周次区间显示（"5/5 - 5/11"）
+    /// Week range display ("5/5 - 5/11")
     let weekRange: String
-    /// 出勤天数（status == .present 的去重日数）
+    /// Attended days (distinct days where status == .present)
     let attendedDays: Int
-    /// 缺勤次数
+    /// Absent count
     let absentCount: Int
-    /// 请假次数
+    /// Excused count
     let excusedCount: Int
-    /// 命中或挑选出的练习主题（3-5 条 bullet 用）
+    /// Topics hit / selected for the bullet list (3-5 entries)
     let practicedTopics: [String]
-    /// AI 风格段落（≈80 字，markdown 友好）
+    /// AI-style paragraph (~80 chars, Markdown-friendly)
     let aiParagraph: String
-    /// 生成时间（PDF 页脚显示）
+    /// Generation timestamp (shown in PDF footer)
     let generatedAt: Date
 }
 
-// MARK: - 引擎
+// MARK: - Engine
 
 enum WeeklyReportEngine {
 
-    /// 主入口：生成指定学员指定周的报告
+    /// Main entry: generate a report for a student in a given week.
     /// - Parameters:
-    ///   - student: 学员
-    ///   - weekOf: 任意一个落在目标周内的日期（函数内部会取 startOfWeek/endOfWeek）
+    ///   - student: the student
+    ///   - weekOf: any date inside the target week (internally collapsed to startOfWeek/endOfWeek)
     /// - Returns: WeeklyReport
     static func generate(for student: Student, weekOf date: Date) -> WeeklyReport {
-        // 1. 计算周区间
+        // 1. Compute the week range
         let weekStart = date.startOfWeek
         let weekEnd = date.endOfWeek
         let weekRange = weekRangeText(start: weekStart, end: weekEnd)
 
-        // 2. 过滤本周该学员的出勤记录
+        // 2. Filter the student's attendance to this week
         let weekRecords = student.attendances.filter { r in
             r.date >= weekStart && r.date <= weekEnd
         }
 
-        // 3. 统计三类计数
+        // 3. Tally the three buckets
         let presentRecords = weekRecords.filter { $0.status == .present }
         let attendedDays = Set(presentRecords.map { Calendar.current.startOfDay(for: $0.date) }).count
         let absentCount = weekRecords.filter { $0.status == .absent }.count
         let excusedCount = weekRecords.filter { $0.status == .excused }.count
 
-        // 4. 构建 deterministic RNG
+        // 4. Build the deterministic RNG
         let seed = stableSeed(studentID: student.id, weekIndex: date.weekIndex)
         var rng = LCGGenerator(seed: seed)
 
-        // 5. 关键词提取：扫描评语命中 practiceKeywords
+        // 5. Keyword extraction: scan notes for practiceKeywords hits
         let practicedTopics = extractPracticeTopics(
             from: presentRecords,
             courseType: student.courseType,
             rng: &rng
         )
 
-        // 6. 拼接 AI 段落
+        // 6. Compose the AI paragraph
         let paragraph = composeParagraph(
             studentName: student.name,
             courseType: student.courseType,
@@ -104,10 +111,10 @@ enum WeeklyReportEngine {
         )
     }
 
-    // MARK: - 关键词提取
+    // MARK: - Keyword extraction
 
-    /// 从本周评语中扫描课程关键词；命中即列入 practicedTopics
-    /// 命中不足 3 条时，用 deterministic 方式从 practiceKeywords 补齐
+    /// Scan the week's notes for course keywords and use the hits as practicedTopics.
+    /// If fewer than 3 hits, deterministically top up from practiceKeywords.
     private static func extractPracticeTopics(
         from records: [AttendanceRecord],
         courseType: CourseType,
@@ -128,22 +135,22 @@ enum WeeklyReportEngine {
             }
         }
 
-        // 命中至少 3 条，前 5 条
+        // At least 3 hits — return up to 5
         if hits.count >= 3 {
             return Array(hits.prefix(5))
         }
 
-        // 不足 3 条，从未命中的关键词里 deterministic 补齐到 3-4 条
+        // Fewer than 3 hits — deterministically pad from the unused keywords up to 3-4
         let unused = allKeywords.filter { !seen.contains($0) }
         let needed = max(0, 3 - hits.count)
         let supplemented = shuffled(unused, using: &rng).prefix(needed)
         return hits + supplemented
     }
 
-    // MARK: - AI 段落拼接
+    // MARK: - AI paragraph composition
 
-    /// 拼接 80 字左右的家长汇报段落
-    /// 结构：[本周出勤总结] + [练习要点串联] + [评价句（正面+改进）] + [家长建议]
+    /// Compose a ~80-character parent-facing paragraph.
+    /// Structure: [attendance summary] + [practice highlights] + [evaluation (positive + improvement)] + [parent suggestion]
     private static func composeParagraph(
         studentName: String,
         courseType: CourseType,
@@ -158,18 +165,18 @@ enum WeeklyReportEngine {
         let improvement = pick(from: evals.improvement, count: 1, using: &rng)
         let topic = practicedTopics.first ?? courseType.practiceKeywords.first ?? "基础练习"
 
-        // 出勤总结句
+        // Attendance summary sentence
         let attendanceSentence: String
         if attendedDays >= 3 {
             attendanceSentence = "本周出勤 \(attendedDays) 次，状态稳定。"
         } else if attendedDays >= 1 {
             attendanceSentence = "本周共上课 \(attendedDays) 次\(absentCount > 0 ? "，另有 \(absentCount) 次缺勤" : "")。"
         } else {
-            // 兜底：本周无出勤
+            // Fallback: no attendance this week
             return "本周 **\(studentName)** 没有上课记录\(excusedCount > 0 ? "（请假 \(excusedCount) 次）" : "")，建议主动同步当前进度，尽快约下一次课。"
         }
 
-        // 练习要点串联
+        // Practice-highlight sentence
         let practiceSentence: String
         if practicedTopics.count >= 3 {
             let p1 = practicedTopics[0]
@@ -182,21 +189,21 @@ enum WeeklyReportEngine {
             practiceSentence = "围绕本周既定计划稳步推进，"
         }
 
-        // 评价句
+        // Evaluation sentence
         let posPart = positive.joined(separator: "、")
         let impPart = improvement.first ?? "细节需打磨"
         let evalSentence = "整体表现\(posPart)，下一阶段建议关注 \(impPart)。"
 
-        // 下一阶段建议（适配 vibe coding 圈层语境）
+        // Next-step suggestion (tailored to the vibe-coding audience context)
         let suggestionPool: [String]
         switch courseType {
-        case .piano:        // 出海营销
+        case .piano:        // Overseas Marketing
             suggestionPool = [
                 "建议下周复盘 3 条 TopGMV 素材，提炼可复制的 hook 公式。",
                 "可跑一组 ABO vs CBO 小预算测试，验证当前出价假设。",
                 "提醒：素材产能优先级 > 投放策略，先把脚本流水线稳住。"
             ]
-        case .english:      // 龙虾配置
+        case .english:      // Lobster Rig
             suggestionPool = [
                 "建议下周对比 vLLM 与 SGLang 同模型推理速度，出一份测评。",
                 "提醒：散热与电源冗余先解决，再追极致 token/s。",
@@ -208,13 +215,13 @@ enum WeeklyReportEngine {
                 "提醒：Plan 阶段控制在 5 步以内，超过就拆 Subagent 避免上下文爆炸。",
                 "可给 hooks 加日志，复盘哪些规则生效频次最高。"
             ]
-        case .math:         // AI 增长
+        case .math:         // AI Growth
             suggestionPool = [
                 "建议本周设计 1 个 LP A/B 实验，目标 Signup +20%。",
                 "提醒：Cohort Retention 要看 D1/D7/D30 三条线，单点容易误判。",
                 "可访谈 3 位流失用户，找出 Onboarding 真正卡点。"
             ]
-        case .art:          // SwiftUI 进阶
+        case .art:          // SwiftUI Advanced
             suggestionPool = [
                 "建议下周用自定义 Layout 实现一个流式标签布局。",
                 "提醒：MainActor 别滥用，IO 密集型放后台 actor 更顺。",
@@ -226,12 +233,13 @@ enum WeeklyReportEngine {
         return "\(attendanceSentence)\(practiceSentence)\(evalSentence)\(suggestion)"
     }
 
-    // MARK: - 工具
+    // MARK: - Utilities
 
     private static func stableSeed(studentID: UUID, weekIndex: Int) -> UInt64 {
-        // UUID hash 在 Swift 中不保证跨进程稳定。我们从 UUID 的字节直接取出 64 bit。
+        // UUID hash is not guaranteed stable across processes in Swift. Pull
+        // 64 bits straight out of the UUID byte buffer instead.
         let uuid = studentID.uuid
-        // 把 16 字节拼成两个 UInt64，再异或
+        // Pack the 16 bytes into two UInt64s, then xor them together.
         let bytes: [UInt8] = [
             uuid.0, uuid.1, uuid.2, uuid.3, uuid.4, uuid.5, uuid.6, uuid.7,
             uuid.8, uuid.9, uuid.10, uuid.11, uuid.12, uuid.13, uuid.14, uuid.15
@@ -245,7 +253,7 @@ enum WeeklyReportEngine {
         return hi ^ lo ^ UInt64(bitPattern: Int64(weekIndex))
     }
 
-    /// 简易 deterministic shuffle（基于 Fisher-Yates + 我们自己的 RNG）
+    /// Simple deterministic shuffle (Fisher-Yates on top of our own RNG)
     private static func shuffled<T>(_ arr: [T], using rng: inout LCGGenerator) -> [T] {
         var a = arr
         guard a.count > 1 else { return a }
@@ -256,13 +264,13 @@ enum WeeklyReportEngine {
         return a
     }
 
-    /// deterministic 从数组里取 count 个（不重复，count 大于数组长度时返回全部）
+    /// Deterministically pick `count` items (no duplicates; returns all when count exceeds the array)
     private static func pick<T>(from arr: [T], count: Int, using rng: inout LCGGenerator) -> [T] {
         let shuffledArr = shuffled(arr, using: &rng)
         return Array(shuffledArr.prefix(count))
     }
 
-    /// 周区间显示文本
+    /// Week-range display text
     private static func weekRangeText(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
@@ -270,16 +278,18 @@ enum WeeklyReportEngine {
     }
 }
 
-// MARK: - 线性同余 RNG（deterministic）
+// MARK: - Linear Congruential RNG (deterministic)
 
-/// 线性同余生成器（LCG），Numerical Recipes 推荐参数。
-/// 同一 seed 永远产生同一序列，不依赖系统状态，跨进程/跨设备稳定。
-/// 与 MockSeed.SeededGenerator（xorshift64）算法不同——这里特意用 LCG 让两个文件各自独立、互不耦合。
+/// Linear Congruential Generator (LCG) using the Numerical Recipes constants.
+/// The same seed always yields the same sequence — independent of system
+/// state, stable across processes and devices.
+/// Algorithmically distinct from MockSeed.SeededGenerator (xorshift64) on
+/// purpose, so the two files stay decoupled.
 struct LCGGenerator: RandomNumberGenerator {
     private var state: UInt64
 
     init(seed: UInt64) {
-        // seed 为 0 会让 LCG 停在 0；用一个安全的 fallback
+        // A seed of 0 would freeze the LCG at 0 — fall back to a safe constant.
         self.state = seed == 0 ? 0x9E3779B97F4A7C15 : seed
     }
 

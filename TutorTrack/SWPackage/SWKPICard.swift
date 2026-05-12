@@ -2,8 +2,9 @@
 //  SWKPICard.swift
 //  TutorTrack — ShipSwift Recipe: component-kpi-card
 //
-//  Dashboard KPI 卡片：图标 + 标题 + 数值（numericText 动画）+ 自定义 trailing slot。
-//  含配套 SWKPIDeltaTag（同环比百分比指示器）。
+//  Dashboard KPI card: icon + title + value (numericText animation) + a custom
+//  trailing slot. Ships with companion SWKPIDeltaTag for period-over-period
+//  percentage deltas.
 //
 
 import SwiftUI

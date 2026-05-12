@@ -2,8 +2,9 @@
 //  SWBulletPointText.swift
 //  TutorTrack — ShipSwift Recipe: component-bullet-point-text
 //
-//  文本前加彩色胶囊条 bullet。本 demo 用于学员详情页的签到评语历史列表，
-//  bullet 颜色取课程色（钢琴粉 / 英语蓝 / 编程紫 / 数学橙 / 美术绿）。
+//  Prefixes text with a colored capsule bullet. This demo uses it for the
+//  attendance-note history list on the student detail page; the bullet color
+//  comes from the student's course color (pink / blue / purple / orange / green).
 //
 
 import SwiftUI

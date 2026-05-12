@@ -2,8 +2,8 @@
 //  SWTabButton.swift
 //  TutorTrack — ShipSwift Recipe: component-tab-button
 //
-//  胶囊形 tab 按钮，selected 用 AccentColor，否则灰色。
-//  本 demo 用作签到状态切换 chip（出勤 / 缺勤 / 请假）。
+//  Capsule tab button. Selected state uses AccentColor; otherwise gray.
+//  Used here as the check-in status switch (present / absent / excused).
 //
 
 import SwiftUI
