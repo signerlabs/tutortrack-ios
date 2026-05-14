@@ -32,9 +32,9 @@ enum SWExportShare {
         var errorDescription: String? {
             switch self {
             case .renderFailed:
-                return "PDF 渲染失败"
+                return "PDF rendering failed"
             case .writeFailed(let error):
-                return "PDF 写入失败：\(error.localizedDescription)"
+                return "PDF write failed: \(error.localizedDescription)"
             }
         }
     }
@@ -118,6 +118,6 @@ enum SWExportShare {
 ///
 /// ```swift
 /// if let pdfURL {
-///     ShareLink(item: pdfURL, preview: SharePreview("家长周报.pdf"))
+///     ShareLink(item: pdfURL, preview: SharePreview("WeeklyReport.pdf"))
 /// }
 /// ```

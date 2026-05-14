@@ -15,7 +15,7 @@
 //  5. The bottom "Export & Share PDF" button:
 //     - Calls SWExportShare.renderSinglePagePDF to rasterize WeeklyReportPDFView
 //       into a single A4 page.
-//     - ShareLink opens the system share sheet (WeChat / email / print).
+//     - ShareLink opens the system share sheet (Messages / email / print).
 //
 
 import SwiftUI
@@ -36,8 +36,8 @@ struct WeeklyReportHomeView: View {
     @State private var isGenerating: Bool = false
 
     enum WeekOffset: String, CaseIterable, Identifiable {
-        case thisWeek = "本周"
-        case lastWeek = "上周"
+        case thisWeek = "This Week"
+        case lastWeek = "Last Week"
         var id: String { rawValue }
 
         var dateAnchor: Date {
@@ -97,7 +97,7 @@ struct WeeklyReportHomeView: View {
             .padding(.bottom, 24)
         }
         .background(Color("WarmIvory").ignoresSafeArea())
-        .navigationTitle("AI 周报")
+        .navigationTitle("AI Weekly Report")
         .swPageLoading(.weeklyReport)  // Full-screen loading overlay
         .onAppear {
             if focusedStudentID == nil {
@@ -113,7 +113,7 @@ struct WeeklyReportHomeView: View {
 
     private var studentChips: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("选择学员")
+            Text("Select a Student")
                 .font(.headline)
                 .padding(.horizontal)
 
@@ -173,7 +173,7 @@ struct WeeklyReportHomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(Color("CoursePurple"))
                     .symbolEffect(.pulse, options: .repeating)
-                Text("AI 正在分析本周表现")
+                Text("AI is analyzing this week's performance")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 SWThinkingIndicator(dotSize: 4, dotColor: Color("CoursePurple"))
@@ -198,7 +198,7 @@ struct WeeklyReportHomeView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
-                Text("生成 AI 周报")
+                Text("Generate AI Weekly Report")
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
@@ -224,7 +224,7 @@ struct WeeklyReportHomeView: View {
                 Button {
                     resetReport()
                 } label: {
-                    Label("重新生成", systemImage: "arrow.clockwise")
+                    Label("Regenerate", systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                 }
@@ -234,7 +234,7 @@ struct WeeklyReportHomeView: View {
                 Button {
                     exportPDF(for: report)
                 } label: {
-                    Label("生成 PDF", systemImage: "doc.richtext")
+                    Label("Export PDF", systemImage: "doc.richtext")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .fontWeight(.semibold)
@@ -252,7 +252,7 @@ struct WeeklyReportHomeView: View {
                 ) {
                     HStack(spacing: 8) {
                         Image(systemName: "square.and.arrow.up.fill")
-                        Text("分享周报 PDF")
+                        Text("Share Weekly Report PDF")
                             .fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity)
@@ -270,10 +270,10 @@ struct WeeklyReportHomeView: View {
             Image(systemName: "doc.text.magnifyingglass")
                 .font(.system(size: 56, weight: .light))
                 .foregroundStyle(.secondary)
-            Text("还没有学员")
+            Text("No students yet")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("先到「学员」Tab 添加学员，才能生成周报")
+            Text("Add a student from the Students tab before generating a report")
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -299,7 +299,7 @@ struct WeeklyReportHomeView: View {
         isGenerating = true
         SWLoadingManager.shared.show(
             page: .weeklyReport,
-            message: "AI 正在分析本周表现…",
+            message: "AI is analyzing this week's performance…",
             systemImage: "sparkles"
         )
 
@@ -319,18 +319,18 @@ struct WeeklyReportHomeView: View {
 
     /// Export the PDF (ImageRenderer + PDFKit, zero network)
     private func exportPDF(for report: WeeklyReport) {
-        let fileName = "\(report.studentName)-周报-\(report.weekRange.replacingOccurrences(of: " ", with: ""))"
+        let fileName = "\(report.studentName)-WeeklyReport-\(report.weekRange.replacingOccurrences(of: " ", with: ""))"
         do {
             let url = try SWExportShare.renderSinglePagePDF(
                 view: WeeklyReportPDFView(report: report),
                 fileName: fileName,
-                title: "\(report.studentName) 学员周报 \(report.weekRange)",
+                title: "\(report.studentName) Weekly Report \(report.weekRange)",
                 author: "TutorTrack"
             )
             pdfURL = url
-            SWAlertManager.shared.show(.success, message: "PDF 已生成，下方可分享")
+            SWAlertManager.shared.show(.success, message: "PDF generated — share via the button below")
         } catch {
-            SWAlertManager.shared.show(.error, message: "PDF 生成失败：\(error.localizedDescription)")
+            SWAlertManager.shared.show(.error, message: "PDF generation failed: \(error.localizedDescription)")
         }
     }
 }
@@ -349,7 +349,7 @@ private struct WeeklyReportPreviewCard: View {
             // Header
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("学员周报")
+                    Text("Student Weekly Report")
                         .font(.caption)
                         .foregroundStyle(courseColor)
                     Text(report.studentName)
@@ -383,14 +383,14 @@ private struct WeeklyReportPreviewCard: View {
 
             // Attendance KPI row
             HStack(spacing: 10) {
-                kpiBlock(value: report.attendedDays, label: "出勤", color: .green)
-                kpiBlock(value: report.absentCount, label: "缺勤", color: .red)
-                kpiBlock(value: report.excusedCount, label: "请假", color: .gray)
+                kpiBlock(value: report.attendedDays, label: "Present", color: .green)
+                kpiBlock(value: report.absentCount, label: "Absent", color: .red)
+                kpiBlock(value: report.excusedCount, label: "Excused", color: .gray)
             }
 
             // Practice highlights
             VStack(alignment: .leading, spacing: 8) {
-                Label("本周练习要点", systemImage: "checklist")
+                Label("This Week's Practice Highlights", systemImage: "checklist")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(courseColor)
@@ -407,7 +407,7 @@ private struct WeeklyReportPreviewCard: View {
 
             // AI paragraph
             VStack(alignment: .leading, spacing: 8) {
-                Label("AI 周度总结", systemImage: "sparkles")
+                Label("AI Weekly Summary", systemImage: "sparkles")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(courseColor)

@@ -70,7 +70,7 @@ struct CheckInSheet: View {
             // Note input
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Label("课堂评语", systemImage: "text.bubble")
+                    Label("Session Note", systemImage: "text.bubble")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -80,7 +80,7 @@ struct CheckInSheet: View {
                 }
 
                 TextField(
-                    "如：拜厄第 18 条流畅，力度待加强",
+                    "e.g. Practiced ad copy hooks, needs sharper CTA",
                     text: $noteText,
                     axis: .vertical
                 )
@@ -105,7 +105,7 @@ struct CheckInSheet: View {
                 Button {
                     onClose()
                 } label: {
-                    Text("取消")
+                    Text("Cancel")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -114,7 +114,7 @@ struct CheckInSheet: View {
                 Button {
                     confirm()
                 } label: {
-                    Text("签到")
+                    Text("Check In")
                         .frame(maxWidth: .infinity)
                         .fontWeight(.semibold)
                 }
@@ -145,9 +145,9 @@ struct CheckInSheet: View {
 
         do {
             try modelContext.save()
-            SWAlertManager.shared.show(.success, message: "\(student.name) 已记 \(status.displayName)")
+            SWAlertManager.shared.show(.success, message: "\(student.name) marked \(status.displayName)")
         } catch {
-            SWAlertManager.shared.show(.error, message: "签到失败：\(error.localizedDescription)")
+            SWAlertManager.shared.show(.error, message: "Check-in failed: \(error.localizedDescription)")
         }
         onClose()
     }

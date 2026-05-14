@@ -83,12 +83,12 @@ struct StudentDetailView: View {
     private var progressCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("课时进度", systemImage: "graduationcap.fill")
+                Label("Session Progress", systemImage: "graduationcap.fill")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.courseType.color)
                 Spacer()
-                Text("\(student.attendedLessons) / \(student.totalLessons) 节")
+                Text("\(student.attendedLessons) / \(student.totalLessons) sessions")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -100,13 +100,13 @@ struct StudentDetailView: View {
                 .frame(height: 10)
 
             HStack {
-                Text("剩余 \(student.remainingLessons) 节")
+                Text("\(student.remainingLessons) sessions left")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.needsRenewal ? .red : .primary)
 
                 if student.needsRenewal {
-                    Text("· 建议续费")
+                    Text("· Renew suggested")
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
@@ -115,7 +115,7 @@ struct StudentDetailView: View {
 
                 // Renewal Stepper (SWStepper Recipe: component-stepper)
                 HStack(spacing: 8) {
-                    Text("续费")
+                    Text("Renew")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     SWStepper(quantity: renewBinding)
@@ -143,7 +143,7 @@ struct StudentDetailView: View {
                 student.totalLessons = newValue
                 try? modelContext.save()
                 if delta > 0 {
-                    SWAlertManager.shared.show(.success, message: "+\(delta) 节")
+                    SWAlertManager.shared.show(.success, message: "+\(delta) sessions")
                 }
             }
         )
@@ -154,12 +154,12 @@ struct StudentDetailView: View {
     private var notesCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("签到评语历史", systemImage: "text.bubble.fill")
+                Label("Session Notes History", systemImage: "text.bubble.fill")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.courseType.color)
                 Spacer()
-                Text("\(noteRecords.count) 条")
+                Text("\(noteRecords.count) entries")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -197,7 +197,7 @@ struct StudentDetailView: View {
     private var infoCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label("联系方式 / 备注", systemImage: "person.crop.rectangle.fill")
+                Label("Contact & Notes", systemImage: "person.crop.rectangle.fill")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.courseType.color)
@@ -211,7 +211,7 @@ struct StudentDetailView: View {
                 row(icon: "note.text", text: student.notes)
             }
             if student.parentContact.isEmpty && student.notes.isEmpty {
-                Text("暂无联系方式 / 备注")
+                Text("No contact or notes yet")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }

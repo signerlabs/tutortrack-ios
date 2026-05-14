@@ -23,7 +23,7 @@ struct RootTabView: View {
                 }
             } label: {
                 Label {
-                    Text("学员")
+                    Text("Students")
                 } icon: {
                     Image(systemName: selectedTab == "students" ? "person.3.fill" : "person.3")
                 }
@@ -37,7 +37,7 @@ struct RootTabView: View {
                 }
             } label: {
                 Label {
-                    Text("课时")
+                    Text("Sessions")
                 } icon: {
                     Image(systemName: selectedTab == "lessons" ? "graduationcap.fill" : "graduationcap")
                 }
@@ -51,7 +51,7 @@ struct RootTabView: View {
                 }
             } label: {
                 Label {
-                    Text("出勤")
+                    Text("Attendance")
                 } icon: {
                     Image(systemName: selectedTab == "attendance" ? "checkmark.square.fill" : "checkmark.square")
                 }
@@ -65,7 +65,7 @@ struct RootTabView: View {
                 }
             } label: {
                 Label {
-                    Text("周报")
+                    Text("Weekly Report")
                 } icon: {
                     Image(systemName: selectedTab == "report" ? "doc.text.fill" : "doc.text")
                 }

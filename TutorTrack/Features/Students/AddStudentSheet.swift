@@ -30,10 +30,10 @@ struct AddStudentSheet: View {
             Form {
                 // MARK: - Basic info
                 Section {
-                    TextField("学员姓名", text: $name)
+                    TextField("Student name", text: $name)
                         .textInputAutocapitalization(.never)
                 } header: {
-                    Text("基础信息")
+                    Text("Basic Info")
                 }
 
                 // MARK: - Course type
@@ -48,37 +48,37 @@ struct AddStudentSheet: View {
                         .padding(.vertical, 4)
                     }
                 } header: {
-                    Text("课程类型")
+                    Text("Course Type")
                 }
 
                 // MARK: - Lessons
                 Section {
                     HStack {
-                        Text("已购买课时")
+                        Text("Sessions purchased")
                         Spacer()
                         SWStepper(quantity: $totalLessons)
                     }
                 } header: {
-                    Text("课时")
+                    Text("Sessions")
                 }
 
                 // MARK: - Contact & notes
                 Section {
-                    TextField("联系方式（X / 微信 / 邮箱，可选）", text: $parentContact)
-                    TextField("备注（可选）", text: $notes, axis: .vertical)
+                    TextField("Contact (X / WeChat / email, optional)", text: $parentContact)
+                    TextField("Notes (optional)", text: $notes, axis: .vertical)
                         .lineLimit(2...4)
                 } header: {
-                    Text("其他")
+                    Text("Other")
                 }
             }
-            .navigationTitle("新增学员")
+            .navigationTitle("Add Student")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("取消") { isPresented = false }
+                    Button("Cancel") { isPresented = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("保存", action: save)
+                    Button("Save", action: save)
                         .fontWeight(.semibold)
                         .disabled(!canSubmit)
                 }
@@ -128,7 +128,7 @@ struct AddStudentSheet: View {
         modelContext.insert(student)
         try? modelContext.save()
 
-        SWAlertManager.shared.show(.success, message: "已添加 \(student.name)")
+        SWAlertManager.shared.show(.success, message: "Added \(student.name)")
         isPresented = false
     }
 }

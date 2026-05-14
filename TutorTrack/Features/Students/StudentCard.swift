@@ -33,7 +33,7 @@ struct StudentCard: View {
                     Image(systemName: "graduationcap")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                    Text("剩余 \(student.remainingLessons) / \(student.totalLessons) 节")
+                    Text("\(student.remainingLessons) / \(student.totalLessons) sessions left")
                         .font(.caption)
                         .foregroundStyle(student.needsRenewal ? .red : .secondary)
                         .fontWeight(student.needsRenewal ? .semibold : .regular)

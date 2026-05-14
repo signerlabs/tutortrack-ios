@@ -42,7 +42,7 @@ struct RenewLessonsSheet: View {
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(student.courseType.color)
                 }
-                Text("为 \(student.name) 续费")
+                Text("Renew sessions for \(student.name)")
                     .font(.title3)
                     .fontWeight(.semibold)
                 Text(student.courseType.displayName)
@@ -58,11 +58,11 @@ struct RenewLessonsSheet: View {
 
             // Current state summary
             HStack(spacing: 16) {
-                summaryCell(label: "已上", value: "\(student.attendedLessons)")
+                summaryCell(label: "Attended", value: "\(student.attendedLessons)")
                 Divider().frame(height: 28)
-                summaryCell(label: "总计", value: "\(student.totalLessons)")
+                summaryCell(label: "Total", value: "\(student.totalLessons)")
                 Divider().frame(height: 28)
-                summaryCell(label: "剩余", value: "\(student.remainingLessons)",
+                summaryCell(label: "Remaining", value: "\(student.remainingLessons)",
                             tint: student.needsRenewal ? .red : .primary)
             }
             .padding(.vertical, 10)
@@ -78,12 +78,12 @@ struct RenewLessonsSheet: View {
 
             // Renewal-amount row (SWStepper Recipe: component-stepper)
             HStack {
-                Text("本次续费")
+                Text("Add this time")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Spacer()
                 SWStepper(quantity: addBinding)
-                Text("节")
+                Text("sessions")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .padding(.leading, 4)
@@ -95,7 +95,7 @@ struct RenewLessonsSheet: View {
                 Image(systemName: "arrow.right.circle.fill")
                     .font(.caption)
                     .foregroundStyle(student.courseType.color)
-                Text("续费后共 \(student.totalLessons + addLessons) 节，剩余 \(student.remainingLessons + addLessons) 节")
+                Text("After renewal: \(student.totalLessons + addLessons) total, \(student.remainingLessons + addLessons) remaining")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -107,7 +107,7 @@ struct RenewLessonsSheet: View {
                 Button {
                     onClose()
                 } label: {
-                    Text("取消")
+                    Text("Cancel")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -116,7 +116,7 @@ struct RenewLessonsSheet: View {
                 Button {
                     confirmRenew()
                 } label: {
-                    Text("确认续费 +\(addLessons) 节")
+                    Text("Confirm Renewal +\(addLessons)")
                         .frame(maxWidth: .infinity)
                         .fontWeight(.semibold)
                 }
@@ -154,9 +154,9 @@ struct RenewLessonsSheet: View {
         student.totalLessons += added
         do {
             try modelContext.save()
-            SWAlertManager.shared.show(.success, message: "续费成功，新增 \(added) 节")
+            SWAlertManager.shared.show(.success, message: "Renewal complete, added \(added) sessions")
         } catch {
-            SWAlertManager.shared.show(.error, message: "保存失败：\(error.localizedDescription)")
+            SWAlertManager.shared.show(.error, message: "Save failed: \(error.localizedDescription)")
         }
         onClose()
     }

@@ -58,12 +58,12 @@ struct AttendanceCalendarView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Title row + legend
             HStack {
-                Label("出勤热力", systemImage: "calendar.badge.checkmark")
+                Label("Attendance Heatmap", systemImage: "calendar.badge.checkmark")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.courseType.color)
                 Spacer()
-                Text("过去 \(days) 天")
+                Text("Past \(days) days")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -137,10 +137,10 @@ struct AttendanceCalendarView: View {
 
     private var legend: some View {
         HStack(spacing: 12) {
-            legendItem(color: student.courseType.color,    label: "出勤")
-            legendItem(color: .red.opacity(0.75),          label: "缺勤")
-            legendItem(color: .gray.opacity(0.55),         label: "请假")
-            legendItem(color: student.courseType.color.opacity(0.12), label: "无")
+            legendItem(color: student.courseType.color,    label: "Present")
+            legendItem(color: .red.opacity(0.75),          label: "Absent")
+            legendItem(color: .gray.opacity(0.55),         label: "Excused")
+            legendItem(color: student.courseType.color.opacity(0.12), label: "None")
             Spacer()
         }
         .font(.caption2)

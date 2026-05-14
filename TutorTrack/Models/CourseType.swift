@@ -4,7 +4,7 @@
 //
 //  Course-type enum with 5 presets (Overseas Marketing / Lobster Rig /
 //  Claude Code / AI Growth / SwiftUI Advanced). Each course carries:
-//    - Display name (Chinese)
+//    - Display name (English)
 //    - Course color (loaded from Assets.xcassets ColorSet)
 //    - SF Symbol icon (used as student avatar fallback)
 //    - Template dictionary (used by WeeklyReportEngine to compose AI paragraphs)
@@ -27,11 +27,11 @@ enum CourseType: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .piano:   "出海营销"
-        case .english: "龙虾配置"
+        case .piano:   "Overseas Marketing"
+        case .english: "Lobster Rig"
         case .coding:  "Claude Code"
-        case .math:    "AI 增长"
-        case .art:     "SwiftUI 进阶"
+        case .math:    "AI Growth"
+        case .art:     "SwiftUI Advanced"
         }
     }
 
@@ -67,58 +67,58 @@ enum CourseType: String, Codable, CaseIterable {
         switch self {
         case .piano:
             return [
-                "TikTok Shop 短视频脚本",
-                "Meta Ads CBO 出价测试",
-                "红人 affiliate 谈合作",
-                "Amazon Listing A+ 优化",
-                "Shopify Subscriptions 配置",
-                "像素回传调试",
-                "DTC 落地页转化优化",
-                "GMV 单量爬坡复盘"
+                "TikTok Shop video scripting",
+                "Meta Ads CBO bid testing",
+                "Affiliate deal negotiation",
+                "Amazon Listing A+ optimization",
+                "Shopify Subscriptions setup",
+                "Pixel postback debugging",
+                "DTC landing page CRO",
+                "GMV ramp-up review"
             ]
         case .english:
             return [
-                "双 4090 NVLink 跑通",
-                "70B Q4 量化对比 INT8",
-                "vLLM PagedAttention 调参",
-                "Flash Attention 2 编译",
-                "Llama.cpp KV cache 调优",
-                "Ollama 多模型并发",
-                "MLX Swift M3 Ultra 本地推理",
-                "TGI 部署压测"
+                "Dual 4090 NVLink bring-up",
+                "70B Q4 vs INT8 benchmarking",
+                "vLLM PagedAttention tuning",
+                "Flash Attention 2 build",
+                "Llama.cpp KV cache tuning",
+                "Ollama multi-model concurrency",
+                "MLX Swift on M3 Ultra inference",
+                "TGI deployment load test"
             ]
         case .coding:
             return [
-                "PreToolUse Hook 阻断脚本",
-                "Subagent 并行任务调度",
-                "Skills 触发条件设计",
-                "MCP Server 自定义工具",
-                "TaskCreate 拆分长任务",
-                "CLAUDE.md 项目记忆维护",
-                "Slash Command 自定义",
-                "Plan Mode 工作流"
+                "PreToolUse hook blocker script",
+                "Subagent parallel scheduling",
+                "Skills trigger condition design",
+                "Custom MCP server tools",
+                "TaskCreate long-task splitting",
+                "CLAUDE.md project memory upkeep",
+                "Custom slash command authoring",
+                "Plan Mode workflow"
             ]
         case .math:
             return [
-                "Aha Moment 漏斗拆解",
-                "Cohort Retention 周表",
-                "病毒系数 K 值测算",
-                "LP → Signup 转化优化",
-                "Activation 关键事件设计",
-                "Referral 病毒裂变设计",
-                "Onboarding 流失点分析",
-                "PMF 信号识别"
+                "Aha-moment funnel breakdown",
+                "Cohort retention weekly table",
+                "Viral K-factor calculation",
+                "LP -> Signup CRO",
+                "Activation key-event design",
+                "Referral viral loop design",
+                "Onboarding drop-off analysis",
+                "PMF signal detection"
             ]
         case .art:
             return [
-                "Layout 协议自定义",
-                "matchedGeometryEffect 动画",
-                "Observable + iOS 17 数据流",
-                "Concurrency + MainActor 隔离",
-                "SwiftData @Model 关系建模",
-                "PhaseAnimator 多阶段动画",
-                "Charts 自定义 ChartContent",
-                "Liquid Glass 材质实践"
+                "Custom Layout protocol",
+                "matchedGeometryEffect animation",
+                "Observable + iOS 17 data flow",
+                "Concurrency + MainActor isolation",
+                "SwiftData @Model relationships",
+                "PhaseAnimator multi-step animation",
+                "Custom ChartContent in Charts",
+                "Liquid Glass material in practice"
             ]
         }
     }
@@ -129,28 +129,28 @@ enum CourseType: String, Codable, CaseIterable {
         switch self {
         case .piano:
             return (
-                positive: ["素材产能稳定", "ROAS 表现亮眼", "选品节奏成熟", "竞品分析深入"],
-                improvement: ["LP 转化率偏低", "TikTok 算法理解需深入", "复购漏斗待打通", "供应链备货偏保守"]
+                positive: ["steady creative output", "standout ROAS", "mature SKU selection cadence", "deep competitive teardown"],
+                improvement: ["LP conversion still soft", "needs deeper TikTok algo intuition", "repeat-purchase funnel not wired up", "supply-chain stocking too conservative"]
             )
         case .english:
             return (
-                positive: ["显存测算精确", "量化方案选型合理", "推理速度对标 SOTA", "硬件预算控制好"],
-                improvement: ["散热方案待优化", "电源冗余偏紧", "驱动兼容性踩坑", "PCIe 通道数没榨干"]
+                positive: ["precise VRAM sizing", "well-reasoned quantization choice", "throughput close to SOTA", "tight hardware budget control"],
+                improvement: ["cooling solution needs work", "power headroom too tight", "driver compat traps hit", "PCIe lanes underutilized"]
             )
         case .coding:
             return (
-                positive: ["hooks 思路清晰", "subagent prompt 自洽", "上下文管理精细", "记忆系统组织规范"],
-                improvement: ["MCP 工具拆分过细", "Skills 触发条件太宽", "agent 协作链路不顺", "Plan 阶段铺得太大"]
+                positive: ["clean hook design", "self-consistent subagent prompts", "fine-grained context control", "well-organized memory system"],
+                improvement: ["MCP tools fragmented too finely", "Skills triggers too broad", "agent handoffs not smooth", "Plan phase scoped too large"]
             )
         case .math:
             return (
-                positive: ["北极星指标定义清晰", "归因模型搭得稳", "实验节奏稳定", "用户访谈结论扎实"],
-                improvement: ["假设验证偏慢", "实验样本量不够大", "数据看板维度太杂", "PMF 信号判断偏主观"]
+                positive: ["clear north-star metric", "solid attribution model", "steady experiment cadence", "well-grounded user interviews"],
+                improvement: ["hypothesis validation too slow", "sample size too small", "dashboard dimensions too noisy", "PMF read too subjective"]
             )
         case .art:
             return (
-                positive: ["视图结构清晰", "动画细腻自然", "状态隔离干净", "性能优化敏感"],
-                improvement: ["MainActor 边界把握偏紧", "重绘开销待优化", "Layout 嵌套层级偏深", "依赖注入方式偏老派"]
+                positive: ["clear view structure", "smooth, natural animation", "clean state isolation", "sharp eye for performance"],
+                improvement: ["MainActor boundary too tight", "redraw cost still to optimize", "Layout nesting too deep", "old-school dependency injection"]
             )
         }
     }

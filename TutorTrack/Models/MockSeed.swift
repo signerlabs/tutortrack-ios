@@ -52,35 +52,35 @@ enum MockSeed {
                 courseType: .piano,
                 totalLessons: 30,
                 parentContact: "@alex_tiktok · WeChat: AlexDTC",
-                notes: "TikTok Shop 美区跑量阶段，目标单日 GMV 5 万美金；当前卡在素材产能与 CBO 出价节奏。"
+                notes: "Scaling TikTok Shop in the US, targeting $50K daily GMV; currently bottlenecked on creative output and CBO bid cadence."
             ),
             Student(
                 name: "Mark",
                 courseType: .english,
                 totalLessons: 24,
                 parentContact: "Telegram: @mark_rig · mark@local-ai.dev",
-                notes: "准备组双 4090 工作站本地跑 70B Q4 量化；纠结 vLLM vs SGLang，关注 PagedAttention 调参。"
+                notes: "Building a dual-4090 workstation for local 70B Q4 inference; weighing vLLM vs SGLang, focused on PagedAttention tuning."
             ),
             Student(
-                name: "思源",
+                name: "Siyuan",
                 courseType: .coding,
                 totalLessons: 20,
                 parentContact: "X / GitHub: @siyuan-builds",
-                notes: "想把日常 dev workflow 全部 agent 化；hooks 已上手，subagent 调度不熟，想自己造 MCP 工具。"
+                notes: "Wants to agent-ify the entire dev workflow; comfortable with hooks, new to subagent orchestration, wants to ship custom MCP tools."
             ),
             Student(
-                name: "老陈",
+                name: "Chen",
                 courseType: .math,
                 totalLessons: 16,
-                parentContact: "微信：chenchen-growth · 小红书：老陈的 SaaS 笔记",
-                notes: "DTC 品牌增长 op，目标做出 1 万付费用户的 SaaS；当前 LP→Signup 转化 8%，想冲到 15%+。"
+                parentContact: "WeChat: chenchen-growth · Xiaohongshu: Chen's SaaS Notes",
+                notes: "DTC brand growth op, targeting 10K paid SaaS users; LP -> Signup conversion at 8%, wants to push past 15%."
             ),
             Student(
-                name: "灰灰",
+                name: "Grey",
                 courseType: .art,
                 totalLessons: 12,
-                parentContact: "X: @grey_swiftui · 小红书：灰灰玩 iOS",
-                notes: "iOS 7 年经验，正上手 iOS 26 新特性（Liquid Glass / Foundation Models）；当前在做独立 App。"
+                parentContact: "X: @grey_swiftui · Xiaohongshu: Grey on iOS",
+                notes: "7 years of iOS experience, ramping up on iOS 26 (Liquid Glass / Foundation Models); shipping an indie app."
             )
         ]
     }
@@ -134,11 +134,11 @@ enum MockSeed {
                         .filter { !$0.isEmpty }
                         .shuffled(using: &generator)
                         .prefix(2)
-                    return parts.joined(separator: "，")
+                    return parts.joined(separator: ", ")
                 case .absent:
-                    return ["临时项目冲突", "身体不适未到", "客户突发会议"].randomElement(using: &generator) ?? ""
+                    return ["Last-minute project conflict", "Out sick", "Unexpected client meeting"].randomElement(using: &generator) ?? ""
                 case .excused:
-                    return ["提前申请请假", "出差/差旅安排", "线下活动冲突"].randomElement(using: &generator) ?? ""
+                    return ["Requested time off in advance", "Travel / business trip", "Offline event conflict"].randomElement(using: &generator) ?? ""
                 }
             }()
 

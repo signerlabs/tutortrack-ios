@@ -67,7 +67,7 @@ struct LessonsHomeView: View {
             .padding(.bottom, 24)
         }
         .background(Color("WarmIvory").ignoresSafeArea())
-        .navigationTitle("课时")
+        .navigationTitle("Sessions")
         .navigationDestination(for: Student.self) { student in
             StudentDetailView(student: student)
         }
@@ -88,13 +88,13 @@ struct LessonsHomeView: View {
     private var kpiSection: some View {
         HStack(spacing: 10) {
             kpiCard(
-                title: "总学员",
+                title: "Total Students",
                 value: "\(students.count)",
                 color: Color("CoursePurple"),
                 icon: "person.3.fill"
             )
             kpiCard(
-                title: "待续费",
+                title: "Renewal Due",
                 value: "\(renewalCount)",
                 color: renewalCount > 0 ? .red : .secondary,
                 icon: "exclamationmark.bubble.fill"
@@ -136,10 +136,10 @@ struct LessonsHomeView: View {
             Image(systemName: "graduationcap")
                 .font(.system(size: 56, weight: .light))
                 .foregroundStyle(.secondary)
-            Text("还没有学员")
+            Text("No students yet")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("先到「学员」Tab 添加学员")
+            Text("Add a student from the Students tab first")
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
         }
@@ -168,7 +168,7 @@ private struct LessonProgressRow: View {
 
             // Lower half: remaining lessons + renew button, lives outside the link
             HStack {
-                Text("剩余 \(student.remainingLessons) 节")
+                Text("\(student.remainingLessons) sessions left")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(student.needsRenewal ? .red : .primary)
@@ -178,7 +178,7 @@ private struct LessonProgressRow: View {
                 Button {
                     onRenew()
                 } label: {
-                    Label("续费", systemImage: "plus.circle.fill")
+                    Label("Renew", systemImage: "plus.circle.fill")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(student.courseType.color)
                         .padding(.horizontal, 12)
@@ -219,7 +219,7 @@ private struct LessonProgressRow: View {
                         courseBadge
                     }
 
-                    Text("\(student.attendedLessons) / \(student.totalLessons) 节")
+                    Text("\(student.attendedLessons) / \(student.totalLessons) sessions")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -227,7 +227,7 @@ private struct LessonProgressRow: View {
                 Spacer(minLength: 6)
 
                 if student.needsRenewal {
-                    SWStatusBadge(text: "续费提醒", style: .error)
+                    SWStatusBadge(text: "Renew", style: .error)
                 }
             }
 

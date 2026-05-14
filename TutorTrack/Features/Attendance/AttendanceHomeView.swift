@@ -58,7 +58,7 @@ struct AttendanceHomeView: View {
             .padding(.bottom, 24)
         }
         .background(Color("WarmIvory").ignoresSafeArea())
-        .navigationTitle("出勤")
+        .navigationTitle("Attendance")
         .sheet(isPresented: Binding(
             get: { checkingInStudent != nil },
             set: { if !$0 { checkingInStudent = nil } }
@@ -82,7 +82,7 @@ struct AttendanceHomeView: View {
     private var todaySection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Label("今日签到", systemImage: "checkmark.square.fill")
+                Label("Today's Check-in", systemImage: "checkmark.square.fill")
                     .font(.headline)
                     .foregroundStyle(Color("CoursePink"))
                 Spacer()
@@ -93,7 +93,7 @@ struct AttendanceHomeView: View {
             .padding(.horizontal)
 
             if allStudents.isEmpty {
-                Text("还没有学员，先去「学员」Tab 添加")
+                Text("No students yet — add one from the Students tab first")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .padding()
@@ -123,7 +123,7 @@ struct AttendanceHomeView: View {
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.white)
                 if done {
-                    // Bottom-right ✓ badge
+                    // Bottom-right check badge
                     Circle()
                         .fill(Color.green)
                         .frame(width: 18, height: 18)
@@ -146,7 +146,7 @@ struct AttendanceHomeView: View {
             Button {
                 checkingInStudent = student
             } label: {
-                Text(done ? "再签" : "签到")
+                Text(done ? "Again" : "Check In")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(done ? Color.secondary : Color.white)
@@ -176,7 +176,7 @@ struct AttendanceHomeView: View {
 
     private func studentPicker(selected: Student) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("本月概览")
+            Text("Month at a Glance")
                 .font(.headline)
                 .padding(.horizontal)
 
@@ -219,10 +219,10 @@ struct AttendanceHomeView: View {
             Image(systemName: "calendar.badge.exclamationmark")
                 .font(.system(size: 56, weight: .light))
                 .foregroundStyle(.secondary)
-            Text("还没有学员")
+            Text("No students yet")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-            Text("先到「学员」Tab 添加学员，才能在这里签到")
+            Text("Add a student from the Students tab to start checking in")
                 .font(.subheadline)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)

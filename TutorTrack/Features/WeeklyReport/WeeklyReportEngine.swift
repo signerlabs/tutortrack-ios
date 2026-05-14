@@ -16,7 +16,7 @@
 //  3. **AI paragraph composition**: roughly 80 chars; choose positive vs.
 //     improvement templates based on attendance days, then append a parent-facing
 //     suggestion.
-//  4. **Reads like an LLM**: returned aiParagraph is Markdown-friendly Chinese
+//  4. **Reads like an LLM**: returned aiParagraph is Markdown-friendly English
 //     prose, ready to feed straight into SWMarkdownText.
 //
 
@@ -149,8 +149,8 @@ enum WeeklyReportEngine {
 
     // MARK: - AI paragraph composition
 
-    /// Compose a ~80-character parent-facing paragraph.
-    /// Structure: [attendance summary] + [practice highlights] + [evaluation (positive + improvement)] + [parent suggestion]
+    /// Compose a parent-facing paragraph.
+    /// Structure: [attendance summary] + [practice highlights] + [evaluation (positive + improvement)] + [next-step suggestion]
     private static func composeParagraph(
         studentName: String,
         courseType: CourseType,
@@ -163,17 +163,19 @@ enum WeeklyReportEngine {
         let evals = courseType.evaluationKeywords
         let positive = pick(from: evals.positive, count: 2, using: &rng)
         let improvement = pick(from: evals.improvement, count: 1, using: &rng)
-        let topic = practicedTopics.first ?? courseType.practiceKeywords.first ?? "基础练习"
+        let topic = practicedTopics.first ?? courseType.practiceKeywords.first ?? "core fundamentals"
 
         // Attendance summary sentence
         let attendanceSentence: String
         if attendedDays >= 3 {
-            attendanceSentence = "本周出勤 \(attendedDays) 次，状态稳定。"
+            attendanceSentence = "Attended \(attendedDays) sessions this week with steady form. "
         } else if attendedDays >= 1 {
-            attendanceSentence = "本周共上课 \(attendedDays) 次\(absentCount > 0 ? "，另有 \(absentCount) 次缺勤" : "")。"
+            let absentPart = absentCount > 0 ? " with \(absentCount) absence\(absentCount > 1 ? "s" : "")" : ""
+            attendanceSentence = "Attended \(attendedDays) session\(attendedDays > 1 ? "s" : "") this week\(absentPart). "
         } else {
             // Fallback: no attendance this week
-            return "本周 **\(studentName)** 没有上课记录\(excusedCount > 0 ? "（请假 \(excusedCount) 次）" : "")，建议主动同步当前进度，尽快约下一次课。"
+            let excusedPart = excusedCount > 0 ? " (\(excusedCount) excused)" : ""
+            return "**\(studentName)** has no sessions on record this week\(excusedPart). Recommend syncing on current progress and scheduling the next session soon."
         }
 
         // Practice-highlight sentence
@@ -182,50 +184,50 @@ enum WeeklyReportEngine {
             let p1 = practicedTopics[0]
             let p2 = practicedTopics[1]
             let p3 = practicedTopics[2]
-            practiceSentence = "重点训练了 **\(p1)**、\(p2) 与 \(p3)，"
+            practiceSentence = "Focused on **\(p1)**, \(p2), and \(p3); "
         } else if !practicedTopics.isEmpty {
-            practiceSentence = "围绕 **\(topic)** 进行了集中练习，"
+            practiceSentence = "Concentrated practice on **\(topic)**; "
         } else {
-            practiceSentence = "围绕本周既定计划稳步推进，"
+            practiceSentence = "Progressed steadily against the week's plan; "
         }
 
         // Evaluation sentence
-        let posPart = positive.joined(separator: "、")
-        let impPart = improvement.first ?? "细节需打磨"
-        let evalSentence = "整体表现\(posPart)，下一阶段建议关注 \(impPart)。"
+        let posPart = positive.joined(separator: " and ")
+        let impPart = improvement.first ?? "the details still need polish"
+        let evalSentence = "overall showing \(posPart). Next phase, focus on \(impPart). "
 
         // Next-step suggestion (tailored to the vibe-coding audience context)
         let suggestionPool: [String]
         switch courseType {
         case .piano:        // Overseas Marketing
             suggestionPool = [
-                "建议下周复盘 3 条 TopGMV 素材，提炼可复制的 hook 公式。",
-                "可跑一组 ABO vs CBO 小预算测试，验证当前出价假设。",
-                "提醒：素材产能优先级 > 投放策略，先把脚本流水线稳住。"
+                "Next week, deconstruct 3 top-GMV creatives and distill a repeatable hook formula.",
+                "Run a small-budget ABO vs CBO test to validate the current bid hypothesis.",
+                "Reminder: creative throughput > targeting strategy — lock the scripting pipeline first."
             ]
         case .english:      // Lobster Rig
             suggestionPool = [
-                "建议下周对比 vLLM 与 SGLang 同模型推理速度，出一份测评。",
-                "提醒：散热与电源冗余先解决，再追极致 token/s。",
-                "可尝试 INT4 与 INT8 量化对照，记录显存占用与精度损失。"
+                "Next week, benchmark vLLM vs SGLang on the same model and write up the results.",
+                "Reminder: solve cooling and PSU headroom before chasing peak tokens/s.",
+                "Try INT4 vs INT8 quantization side-by-side and log VRAM usage and accuracy loss."
             ]
         case .coding:       // Claude Code
             suggestionPool = [
-                "建议下周选 1 个真实工作流封装成 Skill 或 Subagent。",
-                "提醒：Plan 阶段控制在 5 步以内，超过就拆 Subagent 避免上下文爆炸。",
-                "可给 hooks 加日志，复盘哪些规则生效频次最高。"
+                "Next week, wrap one real workflow into a Skill or Subagent.",
+                "Reminder: keep Plan phases under 5 steps — split into Subagents past that to avoid context bloat.",
+                "Add logging to your hooks and review which rules fire most often."
             ]
         case .math:         // AI Growth
             suggestionPool = [
-                "建议本周设计 1 个 LP A/B 实验，目标 Signup +20%。",
-                "提醒：Cohort Retention 要看 D1/D7/D30 三条线，单点容易误判。",
-                "可访谈 3 位流失用户，找出 Onboarding 真正卡点。"
+                "This week, design one LP A/B experiment targeting +20% Signup.",
+                "Reminder: cohort retention needs D1/D7/D30 read together — single-point reads mislead.",
+                "Interview 3 churned users to find the real Onboarding sticking point."
             ]
         case .art:          // SwiftUI Advanced
             suggestionPool = [
-                "建议下周用自定义 Layout 实现一个流式标签布局。",
-                "提醒：MainActor 别滥用，IO 密集型放后台 actor 更顺。",
-                "可把 PhaseAnimator 多阶段动画拆解录屏，作为作品集素材。"
+                "Next week, build a flow-tag layout with a custom Layout protocol.",
+                "Reminder: don't overload MainActor — push IO-heavy work to a background actor.",
+                "Break a PhaseAnimator multi-step animation into a screencast for your portfolio."
             ]
         }
         let suggestion = pick(from: suggestionPool, count: 1, using: &rng).first ?? ""

@@ -21,7 +21,7 @@ struct StudentsHomeView: View {
         let q = searchText.lowercased()
         return students.filter {
             $0.name.lowercased().contains(q) ||
-            $0.courseType.displayName.contains(searchText)
+            $0.courseType.displayName.lowercased().contains(q)
         }
     }
 
@@ -29,7 +29,7 @@ struct StudentsHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 // Search bar (ShipSwift Recipe: component-search-bar)
-                SWSearchBar(text: $searchText, placeholder: "搜索学员姓名 / 课程")
+                SWSearchBar(text: $searchText, placeholder: "Search by name or course")
                     .padding(.horizontal)
                     .padding(.top, 4)
 
@@ -51,7 +51,7 @@ struct StudentsHomeView: View {
             .padding(.bottom, 24)
         }
         .background(Color("WarmIvory").ignoresSafeArea())
-        .navigationTitle("学员")
+        .navigationTitle("Students")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -78,11 +78,11 @@ struct StudentsHomeView: View {
             Image(systemName: "person.crop.circle.badge.questionmark")
                 .font(.system(size: 56, weight: .light))
                 .foregroundStyle(.secondary)
-            Text(searchText.isEmpty ? "还没有学员" : "没有匹配的学员")
+            Text(searchText.isEmpty ? "No students yet" : "No matching students")
                 .font(.headline)
                 .foregroundStyle(.secondary)
             if searchText.isEmpty {
-                Text("点击右上角 + 添加第一位学员")
+                Text("Tap the + button in the top-right to add your first student")
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
             }

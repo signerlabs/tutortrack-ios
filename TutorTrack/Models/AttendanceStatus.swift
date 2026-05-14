@@ -15,9 +15,9 @@ enum AttendanceStatus: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .present: "出勤"
-        case .absent:  "缺勤"
-        case .excused: "请假"
+        case .present: "Present"
+        case .absent:  "Absent"
+        case .excused: "Excused"
         }
     }
 
