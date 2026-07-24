@@ -9,7 +9,6 @@ Student tracker for solo tutors / coaches, source material for the [ShipSwift](h
 
 ## Engineering Constraints
 
-- **No `xcodebuild`** — build via Xcode / Simulator
 - **No `pbxproj` edits** — `PBXFileSystemSynchronizedRootGroup` auto-syncs every `.swift` file under `TutorTrack/`
 - **No third-party dependencies** — zero SPM / CocoaPods is a design goal
 - **Every file using SwiftData APIs must `import SwiftData`** at the top — easy to miss, breaks the build
